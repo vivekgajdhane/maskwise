@@ -92,6 +92,6 @@ Chronological log of prompts, design intent, and verified outcomes across all bu
 - **Intent**: Remove the cream background from the provided Maskwise logo image using color-decontamination alpha matting, preserve original design/colors/proportions at Retina/4K density (`360x237` displayed at `48x32`), and place it in the top-left header of `/`, `/analyze/`, and `/tests/tests.html`.
 - **Outcome**: Generated `assets/maskwise-logo.png` (`11 KB`, `360x237` RGBA), added `.brand-logo` in `css/tokens.css`, integrated into `index.html`, `analyze/index.html`, and `tests/tests.html`, and verified rendering, `0` console/network errors, and `11/11` passing tests.
 
-### Remove Static Before/After Sample Card from Landing Page Hero
-- **Intent**: Remove the static synthetic ticket before/after preview card from the landing page hero section per user feedback, simplifying the hero into a clean, spacious presentation (`max-width: 720px`) with clear hierarchy and CTAs.
-- **Outcome**: Removed `.sample-card` and its raw ticket markup from `index.html`, deleted unused `.sample-card` styles from `css/landing.css`, updated `.hero-content` layout, and verified `11/11` tests passing with zero responsive overflow across 360px/768px/1440px.
+### Left-Align Landing Page Hero Content
+- **Intent**: Wrap `.hero-content` inside `<div class="container">` and set explicit `margin: 0; text-align: left;` so the hero section aligns flush with the topbar brand logo and section headers rather than centering when isolated.
+- **Outcome**: Updated `index.html` and `css/landing.css`. Verified with CDP measurement that `.brand` (16px), `.hero-content` (16px), and `.section-head` (16px) share the exact same left coordinate with zero overflow across viewports. All tests pass (`11/11`).
