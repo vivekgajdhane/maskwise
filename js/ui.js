@@ -559,41 +559,7 @@ function loadSample(kind) {
   processInput();
 }
 
-const THEME_STORAGE_KEY = "maskwise-theme"; // Theme preference only; never stores user text or PII
-const LEGACY_THEME_KEY = "cloaktext-theme"; // Intentional one-time fallback for users switching from old key
-
-function readStoredTheme() {
-  try {
-    const saved = window.localStorage?.getItem(THEME_STORAGE_KEY);
-    if (saved === "light" || saved === "dark") return saved;
-    const legacy = window.localStorage?.getItem(LEGACY_THEME_KEY);
-    if (legacy === "light" || legacy === "dark") {
-      window.localStorage?.setItem(THEME_STORAGE_KEY, legacy);
-      window.localStorage?.removeItem(LEGACY_THEME_KEY);
-      return legacy;
-    }
-  } catch {
-    return null;
-  }
-  return null;
-}
-
-function saveThemePreference(theme) {
-  try {
-    window.localStorage?.setItem(THEME_STORAGE_KEY, theme);
-  } catch {
-    // Ignore storage denial in restricted browser contexts
-  }
-}
-
-function applyTheme(theme) {
-  state.theme = theme;
-  document.documentElement.setAttribute("data-theme", theme);
-  const themeBtn = document.getElementById("theme-toggle");
-  const themeLabel = themeBtn?.querySelector(".theme-label");
-  themeBtn?.setAttribute("aria-pressed", String(theme === "dark"));
-  if (themeLabel) themeLabel.textContent = theme === "light" ? "Dark" : "Light";
-}
+/* Theme forced to light — dark mode disabled */
 
 function bindModeAndThemeEvents() {
   // Force light theme — dark mode disabled

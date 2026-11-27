@@ -60,7 +60,25 @@
   --btn-secondary-bg: var(--ivory);
   --btn-secondary-fg: var(--navy);
   --focus-ring: var(--navy);
+  --color-primary: var(--navy);
+  --color-primary-contrast: var(--ivory);
+  --color-success: #1b5e20;
   --shadow-sm: 0 1px 2px rgba(19, 62, 135, 0.08);
+  --shadow-md: 0 16px 40px rgba(19, 62, 135, 0.10);
+
+  /* PII Tag Badges & Highlighting */
+  --pii-credit_card-bg: rgba(19, 62, 135, 0.14);
+  --pii-credit_card-border: var(--navy);
+  --pii-aadhaar-bg: rgba(96, 139, 193, 0.24);
+  --pii-aadhaar-border: var(--navy);
+  --pii-pan-bg: rgba(203, 220, 235, 0.75);
+  --pii-pan-border: var(--navy-mid);
+  --pii-email-bg: rgba(203, 220, 235, 0.55);
+  --pii-email-border: var(--navy);
+  --pii-phone-bg: rgba(96, 139, 193, 0.16);
+  --pii-phone-border: var(--navy-mid);
+  --pii-ip-bg: rgba(19, 62, 135, 0.09);
+  --pii-ip-border: var(--slate-blue);
 
   /* Typography */
   --font-ui: "Sora", "Helvetica Neue", Helvetica, Arial, sans-serif;
