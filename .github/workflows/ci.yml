@@ -1,0 +1,35 @@
+name: CI & Quality Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Run Automated Tests & Verify Security
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Node.js Built-in Test Suite
+        run: node --test
+
+      - name: Run Integration & Verification Suite
+        run: node tests/tests.mjs
+
+      - name: Run Performance & Throughput Benchmark
+        run: node tests/bench.js
+
+      - name: Verify CSP and Zero Network Outbound Calls
+        run: |
+          ! grep -riE "XMLHttpRequest|fetch\(|WebSocket|sendBeacon" js/detectors.js js/redactors.js js/pipeline.js js/csv.js js/validators.js
+          echo "Client-side isolation verified: 0 outbound network calls."

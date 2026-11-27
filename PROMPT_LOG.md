@@ -118,3 +118,7 @@ Chronological log of prompts, design intent, and verified outcomes across all bu
 ### Cloud Run Deployment Configuration
 - **Intent**: Configure the project for Google Cloud Run deployment by providing a lightweight `Dockerfile` (using `nginx:alpine` serving static content on port 8080) and `.dockerignore`, enabling 1-command deployment (`gcloud run deploy --source .`) to produce the required `*.run.app` submission URL.
 - **Outcome**: Created `Dockerfile` and `.dockerignore`. Entire image builds from static sources without Node binaries. Verified 12/12 unit tests passing, repo size stays under 1.6 MB on single branch `main`.
+
+### Professional Repository Enhancements & CI Workflow
+- **Intent**: Enhance the GitHub repository presentation with a dedicated GitHub Actions CI pipeline (`.github/workflows/ci.yml`) to automatically validate unit tests, ReDoS resilience, performance benchmarks, and zero outbound network calls on every push.
+- **Outcome**: Added automated workflow testing Node built-in test runner, throughput suite, and CSP isolation assertions. Verified 12/12 tests passing, repo size at 1.7 MB on single branch `main`.
