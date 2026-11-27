@@ -127,11 +127,19 @@ open http://127.0.0.1:8000/index.html
 
 ### Running the Test Suite
 
-- **CLI (Node)**:
+- **Node Built-in Test Runner (`node --test`)**:
+  ```bash
+  node --test
+  ```
+- **Legacy CLI Runner**:
   ```bash
   node tests/tests.mjs
   ```
-- **Browser**: Visit `http://127.0.0.1:8000/tests/tests.html` (or click **Open browser test suite** in the app footer).
+- **Throughput Benchmark (100 KB / 1 MB / 5 MB)**:
+  ```bash
+  node tests/bench.js
+  ```
+- **Browser Test Suite**: Visit `http://127.0.0.1:8000/tests/tests.html` (or click **Open browser test suite** in the app footer).
 
 ---
 

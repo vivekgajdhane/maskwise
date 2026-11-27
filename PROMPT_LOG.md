@@ -66,4 +66,8 @@ Chronological log of prompts, design intent, and verified outcomes across all bu
 
 ### Parameter 3: Efficiency
 - **Intent**: Offload detection/redaction to an ES-module Web Worker (`js/worker.js`) with graceful main-thread fallback, add `requestAnimationFrame` chunked diff rendering with a 200 KB preview window for multi-MB inputs, build `tests/bench.js`, and measure exact asset sizes.
-- **Outcome**: Added `js/worker.js` and `tests/bench.js`, updated `js/redactors.js` and `js/ui.js`. Verified benchmarks (`100 KB`: `6.6 ms`, `1 MB`: `33.5 ms`, `5 MB`: `171.6 ms`), total shipped assets `162,778` bytes (~159 KB), and live Web Worker execution in headless Chromium.
+- **Outcome**: Added `js/worker.js` and `tests/bench.js`, updated `js/redactors.js` and `js/ui.js`. Verified benchmarks (`100 KB`: `6.6 ms`, `1 MB`: `33.5 ms`, `5 MB`: `171.6 ms`), total shipped assets `162,778` bytes (~159 KB), and live Web Worker execution in headless Chromium (`625ad38`).
+
+### Parameter 4: Testing
+- **Intent**: Add zero-dependency `node --test` suite (`tests/unit.test.mjs`), expand browser test runner (`tests/suite.js` / `tests/tests.html`) with XSS inertness and 50k ReDoS assertions, and document test commands in `README.md`.
+- **Outcome**: Created `tests/unit.test.mjs`, updated `tests/suite.js` and `README.md`. Verified `node --test` (`10/10` passing), `node tests/tests.mjs` (`11/11` passing), and `tests/tests.html` in headless Chromium (`11/11` passing).

@@ -229,6 +229,32 @@ export function runTestSuite() {
     assert(bigRes.durationMs < 1000, `1 MB took ${bigRes.durationMs.toFixed(1)} ms (> 1000 ms limit)`);
   });
 
+  test("Security: XSS payloads stay inert and 50k ReDoS inputs finish under 50 ms", () => {
+    const xssPayload = '<img src=x onerror=alert(1)> <script>alert("xss")</script> alice@example.com';
+    const xssRes = runSanitization(xssPayload, { format: "text", mode: "pseudonym" });
+    assertEqual(xssRes.sanitizedText, '<img src=x onerror=alert(1)> <script>alert("xss")</script> USER_01');
+    if (typeof document !== "undefined") {
+      const pre = document.createElement("pre");
+      pre.textContent = xssRes.sanitizedText;
+      assertEqual(pre.querySelectorAll("img, script").length, 0, "XSS payload must not create DOM elements");
+    }
+
+    const adversarial = [
+      "9".repeat(50000),
+      "@.".repeat(25000),
+      "a.".repeat(25000) + "com",
+      "9-".repeat(25000),
+      "9=".repeat(25000),
+    ];
+    for (const input of adversarial) {
+      const t0 = performance.now();
+      const res = detectPIIWithStats(input);
+      const ms = performance.now() - t0;
+      assertEqual(res.entities.length, 0);
+      assert(ms < 50, `Adversarial 50k input took ${ms.toFixed(1)} ms (> 50 ms limit)`);
+    }
+  });
+
   const results = [];
   let passed = 0;
   let failed = 0;
