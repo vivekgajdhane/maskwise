@@ -183,53 +183,7 @@
   z-index: 1;
 }
 
-/* Rotator Controls: Accessible pause toggle */
-.rotator-controls {
-  display: flex;
-  justify-content: center;
-  margin-top: var(--space-2);
-  margin-bottom: var(--space-5);
-}
-
-.rotator-toggle-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 14px;
-  border-radius: var(--radius-pill);
-  background-color: transparent;
-  border: 1px solid var(--border-subtle);
-  font-family: var(--font-ui);
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  cursor: pointer;
-  min-height: 44px;
-  transition: background-color var(--transition), border-color var(--transition), color var(--transition);
-}
-
-.rotator-toggle-btn .icon-play {
-  display: none;
-}
-
-.rotator-toggle-btn[aria-pressed="true"] .icon-pause {
-  display: none;
-}
-
-.rotator-toggle-btn[aria-pressed="true"] .icon-play {
-  display: inline-block;
-}
-
-.rotator-toggle-btn:hover {
-  background-color: var(--bg-surface);
-  color: var(--text-primary);
-  border-color: var(--border-color);
-}
-
-.rotator-toggle-btn:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
-}
+/* Rotator auto-plays without manual pause control */
 
 /* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {

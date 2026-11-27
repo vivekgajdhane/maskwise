@@ -85,24 +85,7 @@
   --transition: 200ms ease;
 }
 
-html[data-theme="dark"] {
-  --bg-page: var(--navy);
-  --bg-surface: var(--navy-deep);
-  --bg-surface-alt: #184694;
-  --bg-input: #0B2554;
-  --bg-hover: #2151A3;
-  --border-color: var(--slate-blue);
-  --border-subtle: rgba(203, 220, 235, 0.25);
-  --text-primary: var(--ivory);
-  --text-muted: var(--mist);
-  --btn-primary-bg: var(--ivory);
-  --btn-primary-fg: var(--navy);
-  --btn-primary-hover: var(--mist);
-  --btn-secondary-bg: #184694;
-  --btn-secondary-fg: var(--ivory);
-  --focus-ring: var(--mist);
-  --shadow-sm: 0 1px 2px rgba(11, 37, 84, 0.45);
-}
+/* Dark mode disabled — light theme only */
 
 *,
 *::before,
@@ -116,9 +99,7 @@ html {
   color-scheme: light;
 }
 
-html[data-theme="dark"] {
-  color-scheme: dark;
-}
+/* Dark color-scheme removed — light only */
 
 body {
   margin: 0;
@@ -315,13 +296,7 @@ code {
   flex-shrink: 0;
 }
 
-html[data-theme="light"] .icon-sun {
-  display: none;
-}
-
-html[data-theme="dark"] .icon-moon {
-  display: none;
-}
+/* Icon-sun/moon rules removed — dark mode disabled */
 
 /* Accessible PII Highlight Marks */
 .pii-mark {
@@ -387,40 +362,7 @@ html[data-theme="dark"] .icon-moon {
   font-weight: 600;
 }
 
-html[data-theme="dark"] .pii-credit_card {
-  background-color: rgba(203, 220, 235, 0.24);
-  text-decoration-color: var(--ivory);
-}
-
-html[data-theme="dark"] .pii-aadhaar {
-  background-color: rgba(96, 139, 193, 0.35);
-  text-decoration-color: var(--ivory);
-}
-
-html[data-theme="dark"] .pii-pan {
-  background-color: rgba(243, 243, 224, 0.16);
-  text-decoration-color: var(--ivory);
-}
-
-html[data-theme="dark"] .pii-phone {
-  background-color: rgba(96, 139, 193, 0.28);
-  text-decoration-color: var(--ivory);
-}
-
-html[data-theme="dark"] .pii-ip {
-  background-color: rgba(203, 220, 235, 0.18);
-  border-bottom-color: var(--mist);
-}
-
-html[data-theme="dark"] .pii-email {
-  background-color: rgba(243, 243, 224, 0.12);
-  text-decoration-color: var(--ivory);
-}
-
-html[data-theme="dark"] .redacted-mark {
-  background-color: rgba(243, 243, 224, 0.18);
-  border-color: var(--mist);
-}
+/* Dark mode PII highlight overrides removed — light theme only */
 
 /* Footer */
 .site-footer {

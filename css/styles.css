@@ -247,10 +247,7 @@
   cursor: pointer;
 }
 
-html[data-theme="dark"] .checkbox-label input,
-html[data-theme="dark"] .detector-chip input {
-  accent-color: var(--mist);
-}
+/* Dark mode disabled — light theme only */
 
 .pseudonym-actions {
   display: flex;

@@ -7,66 +7,13 @@
 
 import { initHeadlineRotator } from "./landing-rotator.js";
 
-const THEME_STORAGE_KEY = "maskwise-theme"; // Theme preference only; never stores user text or PII
-const LEGACY_THEME_KEY = "cloaktext-theme"; // Intentional one-time fallback for users switching from old key
-
-export function applyTheme(theme) {
-  document.documentElement.setAttribute("data-theme", theme);
-  const toggleBtn = document.getElementById("theme-toggle");
-  const labelEl = toggleBtn?.querySelector(".theme-label");
-  toggleBtn?.setAttribute("aria-pressed", String(theme === "dark"));
-  if (labelEl) {
-    labelEl.textContent = theme === "light" ? "Dark" : "Light";
-  }
-}
-
-export function readStoredTheme() {
-  try {
-    const saved = window.localStorage?.getItem(THEME_STORAGE_KEY);
-    if (saved === "light" || saved === "dark") return saved;
-    const legacy = window.localStorage?.getItem(LEGACY_THEME_KEY);
-    if (legacy === "light" || legacy === "dark") {
-      window.localStorage?.setItem(THEME_STORAGE_KEY, legacy);
-      window.localStorage?.removeItem(LEGACY_THEME_KEY);
-      return legacy;
-    }
-  } catch {
-    return null;
-  }
-  return null;
-}
-
-export function saveThemePreference(theme) {
-  try {
-    window.localStorage?.setItem(THEME_STORAGE_KEY, theme);
-  } catch {
-    // Ignore storage denial in restricted browser contexts
-  }
-}
-
 /**
- * Initialize landing page theme toggle and prefers-color-scheme listener.
+ * Force light theme on the landing page (dark mode disabled).
  *
  * @returns {void}
  */
 export function initLandingTheme() {
-  const mediaQuery = window.matchMedia?.("(prefers-color-scheme: dark)");
-  const stored = readStoredTheme();
-  let activeTheme = stored || (mediaQuery?.matches ? "dark" : "light");
-  applyTheme(activeTheme);
-
-  mediaQuery?.addEventListener("change", (event) => {
-    if (!readStoredTheme()) {
-      activeTheme = event.matches ? "dark" : "light";
-      applyTheme(activeTheme);
-    }
-  });
-
-  document.getElementById("theme-toggle")?.addEventListener("click", () => {
-    activeTheme = activeTheme === "light" ? "dark" : "light";
-    saveThemePreference(activeTheme);
-    applyTheme(activeTheme);
-  });
+  document.documentElement.setAttribute("data-theme", "light");
 }
 
 /**

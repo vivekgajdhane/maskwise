@@ -596,21 +596,8 @@ function applyTheme(theme) {
 }
 
 function bindModeAndThemeEvents() {
-  const mediaQuery = window.matchMedia?.("(prefers-color-scheme: dark)");
-  const stored = readStoredTheme();
-  if (stored) state.themeOverridden = true;
-  applyTheme(stored || (mediaQuery?.matches ? "dark" : "light"));
-  mediaQuery?.addEventListener("change", (event) => {
-    if (!state.themeOverridden) applyTheme(event.matches ? "dark" : "light");
-  });
-
-  document.getElementById("theme-toggle")?.addEventListener("click", () => {
-    state.themeOverridden = true;
-    const next = state.theme === "light" ? "dark" : "light";
-    saveThemePreference(next);
-    applyTheme(next);
-    announce(`Switched to ${state.theme} theme`);
-  });
+  // Force light theme — dark mode disabled
+  document.documentElement.setAttribute("data-theme", "light");
 
   const modeButtons = document.querySelectorAll(".seg-btn[data-mode]");
   const activateMode = (btn) => {

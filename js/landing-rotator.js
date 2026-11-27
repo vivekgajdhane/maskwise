@@ -54,8 +54,6 @@ export function initHeadlineRotator() {
 
   const headlineEl = document.querySelector(".hero-title");
   const slots = Array.from(document.querySelectorAll(".rotator-slot"));
-  const toggleBtn = document.getElementById("headline-rotator-toggle");
-
   if (!headlineEl || slots.length === 0) return null;
 
   const state = createRotatorState();
@@ -98,25 +96,6 @@ export function initHeadlineRotator() {
     staggerTimeouts.forEach(clearTimeout);
     staggerTimeouts = [];
   }
-
-  function updateBtn(paused) {
-    if (!toggleBtn) return;
-    toggleBtn.setAttribute("aria-pressed", String(paused));
-    const label = toggleBtn.querySelector(".rotator-toggle-label");
-    if (label) label.textContent = paused ? "Resume animation" : "Pause animation";
-  }
-
-  toggleBtn?.addEventListener("click", () => {
-    userPaused = !userPaused;
-    if (userPaused) {
-      state.pause();
-      stop();
-    } else {
-      state.resume();
-      start();
-    }
-    updateBtn(userPaused);
-  });
 
   const pauseTemp = () => {
     if (!userPaused) {
