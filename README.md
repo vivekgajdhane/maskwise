@@ -1,5 +1,8 @@
 # Maskwise — Smart Redaction That Never Leaves Your Device
 
+**Live Deployment**: [https://maskwise-sooty.vercel.app](https://maskwise-sooty.vercel.app)  
+**Workspace Analyzer**: [https://maskwise-sooty.vercel.app/analyze/](https://maskwise-sooty.vercel.app/analyze/)
+
 Maskwise is a dependency-free, 100% browser-based Personally Identifiable Information (PII) sanitizer built for **PromptWars x NIAT_Pune** (Google x NIAT Hackathon). Users can paste raw logs, support tickets, resumes, clinical notes, or upload `.txt`/`.csv` files (up to 5 MB) to detect, validate, highlight, redact, and export sanitized data **entirely inside the browser** without any server communication.
 
 ---

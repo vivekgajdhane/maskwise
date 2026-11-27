@@ -122,3 +122,7 @@ Chronological log of prompts, design intent, and verified outcomes across all bu
 ### Professional Repository Enhancements & CI Workflow
 - **Intent**: Enhance the GitHub repository presentation with a dedicated GitHub Actions CI pipeline (`.github/workflows/ci.yml`) to automatically validate unit tests, ReDoS resilience, performance benchmarks, and zero outbound network calls on every push.
 - **Outcome**: Added automated workflow testing Node built-in test runner, throughput suite, and CSP isolation assertions. Verified 12/12 tests passing, repo size at 1.7 MB on single branch `main`.
+
+### Live Vercel Deployment
+- **Intent**: Deploy Maskwise directly to Vercel production with a clean public URL, disabling SSO protection for public evaluator access and testing live HTTP/2 200 responses.
+- **Outcome**: Deployed to production at `https://maskwise-sooty.vercel.app` (Landing) and `https://maskwise-sooty.vercel.app/analyze/` (Workspace). Verified live responses with zero errors.
