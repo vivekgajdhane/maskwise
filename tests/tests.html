@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none';">
+  <title>CloakText — Verification Test Suite</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="brand-text">
+          <h1 class="brand-title">CloakText Test Suite</h1>
+          <p class="brand-subtitle">Dependency-free browser &amp; CLI verification</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <a href="../index.html" class="btn btn-secondary">Back to app</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container workspace">
+    <section class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title">Automated Checks</h2>
+        <span id="test-summary" class="stat-pill">Running...</span>
+      </div>
+      <ul id="test-results" class="detector-grid"></ul>
+    </section>
+  </main>
+
+  <script type="module" src="tests.js"></script>
+</body>
+</html>

@@ -25,3 +25,7 @@ Chronological record of prompts, engineering decisions, and phase outcomes.
 ## Phase 6: UI Polish, Accessibility, and Responsive Audit
 - **Intent**: Enforce WCAG AA contrast, >=44px touch targets, roving-tabindex keyboard navigation (`ArrowLeft`/`ArrowRight`/`Home`/`End`), skip link, ARIA live announcements, inline SVG favicon (eliminating 404s), `prefers-reduced-motion` support, and verify real headless Chrome rendering at 1440px, 768px, and 360px widths.
 - **Outcome**: Updated `index.html`, `css/styles.css`, and `js/ui.js`; verified in real Chromium via CDP across 1440px, 768px, and 360px viewports (`scrollWidth === innerWidth`, `minTouchTarget === 44px`, `soraLoaded: true`, 0 external network requests, 0 console errors). Removed redundant `.mode-options` min-height gap in Partial Mask mode.
+
+## Phase 7: Automated Test Suite
+- **Intent**: Build a dependency-free test suite runnable in both Node (`tests/tests.mjs`) and the browser (`tests/tests.html`) covering Luhn, Verhoeff, PAN holder codes, IPv4/IPv6 edge cases, overlapping priorities, partial-mask formats, pseudonym normalization/consistency, CSV round-trips, formula neutralization, and 1 MB throughput.
+- **Outcome**: Created `tests/suite.js`, `tests/tests.mjs`, `tests/tests.js`, and `tests/tests.html`. All 10 test suites passed (`10/10`) in both Node and headless Chromium with zero failures and 1 MB throughput well under 1 second.
