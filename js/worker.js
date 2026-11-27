@@ -34,7 +34,6 @@ self.addEventListener("message", (event) => {
       ok: true,
       result: {
         format: result.format,
-        originalText: result.originalText,
         sanitizedText: result.sanitizedText,
         entities: result.entities,
         replacements: result.replacements,

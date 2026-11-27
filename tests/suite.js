@@ -255,6 +255,39 @@ export function runTestSuite() {
     }
   });
 
+  test("Edge cases: empty/null inputs, selective detectors, persistent mapping, and CSV escaped quotes", () => {
+    const emptyRes = runSanitization("", { format: "text" });
+    assertEqual(emptyRes.sanitizedText, "");
+    assertEqual(emptyRes.entities.length, 0);
+    assertEqual(parseCSV("").length, 0);
+    assertEqual(serializeCSV([]), "");
+
+    const onlyEmails = runSanitization("alice@example.com +91 98765 43210", {
+      format: "text",
+      enabledTypes: ["email"],
+      mode: "full",
+    });
+    assertEqual(onlyEmails.entities.length, 1);
+    assertEqual(onlyEmails.sanitizedText, "[REDACTED] +91 98765 43210");
+
+    const mapper = createPseudonymMapper();
+    const run1 = runSanitization("Contact alice@example.com", { format: "text", mode: "pseudonym", mapper });
+    assertEqual(run1.sanitizedText, "Contact USER_01");
+    mapper.beginRun();
+    const run2 = runSanitization("Follow-up bob@example.com and ALICE@EXAMPLE.COM", {
+      format: "text",
+      mode: "pseudonym",
+      mapper,
+    });
+    assertEqual(run2.sanitizedText, "Follow-up USER_02 and USER_01");
+
+    const quotedCsv = 'id,msg\n1,"He said ""ping alice@example.com"" and =SUM(1)"\n';
+    const csvOut = runSanitization(quotedCsv, { format: "csv", mode: "pseudonym" });
+    for (const rep of csvOut.replacements) {
+      assertEqual(csvOut.sanitizedText.slice(rep.sanitizedStart, rep.sanitizedEnd), rep.replacement);
+    }
+  });
+
   const results = [];
   let passed = 0;
   let failed = 0;

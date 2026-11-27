@@ -1,0 +1,14 @@
+{
+  "name": "maskwise",
+  "version": "1.0.0",
+  "description": "Smart client-side PII redaction that never leaves your device.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "test:suite": "node tests/tests.mjs",
+    "bench": "node tests/bench.js"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

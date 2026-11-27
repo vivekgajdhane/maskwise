@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Maskwise automated client-side verification test suite covering Luhn, Verhoeff, PAN, IP, CSV, ReDoS, and XSS safety.">
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: blob:; worker-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none';">
   <title>Maskwise — Verification Test Suite</title>
@@ -11,26 +12,29 @@
   <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
+  <a href="#main-content" class="skip-link">Skip to automated checks</a>
   <header class="topbar">
     <div class="container topbar-inner">
-      <div class="brand">
-        <img src="../assets/maskwise-logo.png" alt="Maskwise logo" class="brand-logo" width="48" height="32">
-        <div class="brand-text">
-          <h1 class="brand-title">Maskwise Test Suite</h1>
-          <p class="brand-subtitle">Dependency-free browser &amp; CLI verification</p>
+      <a href="../" class="brand-link" aria-label="Maskwise home">
+        <div class="brand">
+          <img src="../assets/maskwise-logo.png" alt="Maskwise logo" class="brand-logo" width="48" height="32">
+          <div class="brand-text">
+            <h1 class="brand-title">Maskwise Test Suite</h1>
+            <p class="brand-subtitle">Dependency-free browser &amp; CLI verification</p>
+          </div>
         </div>
-      </div>
+      </a>
       <div class="topbar-actions">
-        <a href="../index.html" class="btn btn-secondary">Back to app</a>
+        <a href="../" class="btn btn-secondary">Back to app</a>
       </div>
     </div>
   </header>
 
-  <main class="container workspace">
-    <section class="panel">
+  <main id="main-content" class="container workspace">
+    <section class="panel" aria-labelledby="tests-heading">
       <div class="panel-header">
-        <h2 class="panel-title">Automated Checks</h2>
-        <span id="test-summary" class="stat-pill">Running...</span>
+        <h2 id="tests-heading" class="panel-title">Automated Checks</h2>
+        <span id="test-summary" class="stat-pill" role="status" aria-live="polite">Running...</span>
       </div>
       <ul id="test-results" class="detector-grid"></ul>
     </section>

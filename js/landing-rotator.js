@@ -1,7 +1,7 @@
 /**
  * Headline Rotator Module for Maskwise.
  * Rotates 3 keywords with 150ms stagger and 2000ms loop interval.
- * Accessible: pauses on hover, focus, visibilitychange, and explicit toggle button.
+ * Accessible: pauses on hover, focus, and visibilitychange.
  * Respects prefers-reduced-motion; transform and opacity only.
  */
 
@@ -59,7 +59,6 @@ export function initHeadlineRotator() {
   const state = createRotatorState();
   let timerId = null;
   let staggerTimeouts = [];
-  let userPaused = false;
 
   function setSlot(slot, nextIdx) {
     const active = slot.querySelector('.rotator-item[data-active="true"]');
@@ -78,7 +77,7 @@ export function initHeadlineRotator() {
   }
 
   function advance() {
-    if (state.isPaused || userPaused) return;
+    if (state.isPaused) return;
     const nextIdx = state.next();
     slots.forEach((slot, i) => {
       staggerTimeouts.push(setTimeout(() => setSlot(slot, nextIdx), i * state.staggerDelay));
@@ -98,17 +97,13 @@ export function initHeadlineRotator() {
   }
 
   const pauseTemp = () => {
-    if (!userPaused) {
-      state.pause();
-      stop();
-    }
+    state.pause();
+    stop();
   };
 
   const resumeTemp = () => {
-    if (!userPaused) {
-      state.resume();
-      start();
-    }
+    state.resume();
+    start();
   };
 
   headlineEl.addEventListener("mouseenter", pauseTemp);
@@ -118,7 +113,7 @@ export function initHeadlineRotator() {
 
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") stop();
-    else if (!userPaused) resumeTemp();
+    else resumeTemp();
   });
 
   start();

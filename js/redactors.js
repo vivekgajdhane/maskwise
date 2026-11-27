@@ -116,18 +116,18 @@ function maskDigitsKeepLast4(raw, defaultFormattedMask) {
     return defaultFormattedMask(digits);
   }
   const keepFrom = Math.max(0, digits.length - 4);
+  const chars = new Array(raw.length);
   let digitIndex = 0;
-  let out = "";
   for (let i = 0; i < raw.length; i++) {
     const ch = raw[i];
     if (ch >= "0" && ch <= "9") {
-      out += digitIndex < keepFrom ? "X" : ch;
+      chars[i] = digitIndex < keepFrom ? "X" : ch;
       digitIndex += 1;
     } else {
-      out += ch;
+      chars[i] = ch;
     }
   }
-  return out;
+  return chars.join("");
 }
 
 function partialMaskCard(raw) {
@@ -151,18 +151,18 @@ function partialMaskPhone(raw) {
   }
   const prefixMatch = raw.startsWith("+") ? raw.match(/^\+\d{1,3}[\s-]+/) : null;
   const prefixDigits = prefixMatch ? prefixMatch[0].replace(/\D/g, "").length : 0;
+  const chars = new Array(raw.length);
   let digitIndex = 0;
-  let out = "";
   for (let i = 0; i < raw.length; i++) {
     const ch = raw[i];
     if (ch >= "0" && ch <= "9") {
-      out += digitIndex < prefixDigits || digitIndex >= keepFrom ? ch : "X";
+      chars[i] = digitIndex < prefixDigits || digitIndex >= keepFrom ? ch : "X";
       digitIndex += 1;
     } else {
-      out += ch;
+      chars[i] = ch;
     }
   }
-  return out;
+  return chars.join("");
 }
 
 function partialMaskIP(raw) {

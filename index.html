@@ -255,19 +255,19 @@ Origin: <mark class="redacted-mark">IP_01</mark></pre>
 
         <!-- Pill filter tabs -->
         <div class="tab-filter-bar" role="tablist" aria-label="Workflow scenarios">
-          <button type="button" class="tab-pill active" role="tab" id="tab-support" aria-selected="true" aria-controls="panel-support" data-scenario="support">
+          <button type="button" class="tab-pill active" role="tab" id="tab-support" aria-selected="true" aria-controls="workflow-panel" tabindex="0" data-scenario="support">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             <span>Support Tickets</span>
           </button>
-          <button type="button" class="tab-pill" role="tab" id="tab-ai" aria-selected="false" aria-controls="panel-ai" data-scenario="ai">
+          <button type="button" class="tab-pill" role="tab" id="tab-ai" aria-selected="false" aria-controls="workflow-panel" tabindex="-1" data-scenario="ai">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
             <span>AI Chat & Prompts</span>
           </button>
-          <button type="button" class="tab-pill" role="tab" id="tab-dev" aria-selected="false" aria-controls="panel-dev" data-scenario="dev">
+          <button type="button" class="tab-pill" role="tab" id="tab-dev" aria-selected="false" aria-controls="workflow-panel" tabindex="-1" data-scenario="dev">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
             <span>Developer Logs</span>
           </button>
-          <button type="button" class="tab-pill" role="tab" id="tab-hr" aria-selected="false" aria-controls="panel-hr" data-scenario="hr">
+          <button type="button" class="tab-pill" role="tab" id="tab-hr" aria-selected="false" aria-controls="workflow-panel" tabindex="-1" data-scenario="hr">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
             <span>HR & Financial</span>
           </button>
@@ -676,7 +676,7 @@ Contact [PHONE_01] confirmed resolution."</pre>
       </div>
 
       <div class="footer-col">
-        <h4 class="footer-heading">PII Detectors</h4>
+        <h3 class="footer-heading">PII Detectors</h3>
         <ul class="footer-links">
           <li><span>Credit Cards (Luhn mod 10)</span></li>
           <li><span>Indian Aadhaar (Verhoeff D5)</span></li>
@@ -688,7 +688,7 @@ Contact [PHONE_01] confirmed resolution."</pre>
       </div>
 
       <div class="footer-col">
-        <h4 class="footer-heading">Sanitization Modes</h4>
+        <h3 class="footer-heading">Sanitization Modes</h3>
         <ul class="footer-links">
           <li><span>Full Mask ([REDACTED])</span></li>
           <li><span>Partial Mask (Contextual)</span></li>
@@ -700,7 +700,7 @@ Contact [PHONE_01] confirmed resolution."</pre>
       </div>
 
       <div class="footer-col">
-        <h4 class="footer-heading">Verification & Security</h4>
+        <h3 class="footer-heading">Verification & Security</h3>
         <ul class="footer-links">
           <li><a href="tests/tests" class="footer-link">In-Browser Test Suite</a></li>
           <li><a href="analyze/" class="footer-link">Analyzer Workspace</a></li>

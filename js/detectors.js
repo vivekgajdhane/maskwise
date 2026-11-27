@@ -81,7 +81,7 @@ function detectCards(text, candidates, rejected) {
     if (hasNumericChainBoundaryConflict(text, start, end) || !hasConsistentCardSeparators(value)) {
       continue;
     }
-    const digits = value.replace(/\D/g, "");
+    const digits = value.includes(" ") || value.includes("-") ? value.replace(/\D/g, "") : value;
     if (digits.length < 13 || digits.length > 19) continue;
     if (isValidLuhn(digits)) {
       const issuer = detectCardIssuer(digits);
@@ -102,7 +102,8 @@ function detectAadhaars(text, candidates, rejected) {
     if (hasNumericChainBoundaryConflict(text, start, end) || (value.includes(" ") && value.includes("-"))) {
       continue;
     }
-    if (isValidAadhaar(value.replace(/\D/g, ""))) {
+    const digits = value.length === 12 ? value : value.replace(/\D/g, "");
+    if (isValidAadhaar(digits)) {
       candidates.push({ type: "aadhaar", start, end, value, confidence: value.length > 12 ? 0.99 : 0.95 });
     } else {
       rejected.push({ type: "verhoeff", start, end });
@@ -185,9 +186,15 @@ function intervalsOverlap(a, b) {
   return a.start < b.end && b.start < a.end;
 }
 
+function getBucketBounds(cand) {
+  return {
+    startBucket: Math.floor(cand.start / APP_CONFIG.BUCKET_SIZE),
+    endBucket: Math.floor(Math.max(cand.start, cand.end - 1) / APP_CONFIG.BUCKET_SIZE),
+  };
+}
+
 function bucketHasOverlap(cand, buckets) {
-  const startBucket = Math.floor(cand.start / APP_CONFIG.BUCKET_SIZE);
-  const endBucket = Math.floor(Math.max(cand.start, cand.end - 1) / APP_CONFIG.BUCKET_SIZE);
+  const { startBucket, endBucket } = getBucketBounds(cand);
   for (let b = startBucket; b <= endBucket; b++) {
     const list = buckets.get(b);
     if (list && list.some((existing) => intervalsOverlap(cand, existing))) return true;
@@ -196,8 +203,7 @@ function bucketHasOverlap(cand, buckets) {
 }
 
 function addToBuckets(cand, buckets) {
-  const startBucket = Math.floor(cand.start / APP_CONFIG.BUCKET_SIZE);
-  const endBucket = Math.floor(Math.max(cand.start, cand.end - 1) / APP_CONFIG.BUCKET_SIZE);
+  const { startBucket, endBucket } = getBucketBounds(cand);
   for (let b = startBucket; b <= endBucket; b++) {
     let list = buckets.get(b);
     if (!list) {

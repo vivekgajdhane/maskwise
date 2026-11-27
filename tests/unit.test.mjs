@@ -221,3 +221,51 @@ test("Unit: Headline rotator state machine (cycle, pause, resume, slot variants)
   assert.equal(countVariants(2), 3, "Slot 2 must have exactly 3 variants");
   assert.equal(countVariants(3), 3, "Slot 3 must have exactly 3 variants");
 });
+
+test("Edge cases: empty inputs, selective filters, persistent mapping, and CSV escaped quote offsets", () => {
+  const emptyRes = runSanitization(null, { format: "text" });
+  assert.equal(emptyRes.sanitizedText, "");
+  assert.equal(emptyRes.entities.length, 0);
+  assert.deepEqual(parseCSV(""), []);
+  assert.equal(serializeCSV(null), "");
+
+  const emailOnly = runSanitization("alice@example.com +91 98765 43210", {
+    format: "text",
+    enabledTypes: ["email"],
+    mode: "full",
+  });
+  assert.equal(emailOnly.entities.length, 1);
+  assert.equal(emailOnly.sanitizedText, "[REDACTED] +91 98765 43210");
+
+  const mapper = createPseudonymMapper();
+  runSanitization("alice@example.com", { mode: "pseudonym", mapper });
+  mapper.beginRun();
+  const nextRun = runSanitization("bob@example.com ALICE@EXAMPLE.COM", { mode: "pseudonym", mapper });
+  assert.equal(nextRun.sanitizedText, "USER_02 USER_01");
+
+  const quotedCsv = 'id,note\n1,"Say ""hi"" to alice@example.com"\n2,=CMD|calc\n3,-1+1\n4,+SUM(1)\n5,@INFO\n';
+  const csvSan = runSanitization(quotedCsv, { format: "csv", mode: "pseudonym" });
+  assert.equal(csvSan.csvStats.formulasGuarded, 4);
+  for (const rep of csvSan.replacements) {
+    assert.equal(csvSan.sanitizedText.slice(rep.sanitizedStart, rep.sanitizedEnd), rep.replacement);
+  }
+});
+
+test("Accessibility & Security DOM audit: CSP tags, valid aria-controls, and heading hierarchy", () => {
+  for (const htmlPath of ["index.html", "analyze/index.html", "tests/tests.html"]) {
+    const html = fs.readFileSync(htmlPath, "utf8");
+    assert.match(html, /connect-src 'none'/, `${htmlPath} must enforce connect-src 'none'`);
+    assert.match(html, /class="skip-link"/, `${htmlPath} must include a skip link`);
+
+    for (const match of html.matchAll(/aria-controls="([^"]+)"/g)) {
+      const targetId = match[1];
+      assert.ok(html.includes(`id="${targetId}"`), `${htmlPath}: aria-controls="${targetId}" target must exist`);
+    }
+
+    const headings = [...html.matchAll(/<h([1-6])\b/g)].map((m) => Number(m[1]));
+    for (let i = 1; i < headings.length; i++) {
+      assert.ok(headings[i] <= headings[i - 1] + 1, `${htmlPath}: heading level skipped h${headings[i - 1]} -> h${headings[i]}`);
+    }
+  }
+});
+

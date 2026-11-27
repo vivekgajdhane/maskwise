@@ -17,7 +17,6 @@ import { createPseudonymMapper } from "./redactors.js";
 import { SAMPLE_NOISY_CSV, SAMPLE_NOISY_TEXT } from "./samples.js";
 
 const state = {
-  theme: "light",
   mode: "full",
   format: "text",
   typedFullMask: false,
@@ -33,8 +32,8 @@ const state = {
   syncLock: null,
   worker: null,
   requestSeq: 0,
+  pendingTexts: new Map(),
   renderSeq: 0,
-  themeOverridden: false,
   announceCountsOnNextResult: false,
 };
 
@@ -50,7 +49,18 @@ function formatBytes(bytes) {
 }
 
 function countLines(text) {
-  return text ? text.split(/\r\n|\n|\r/).length : 0;
+  if (!text) return 0;
+  let lines = 1;
+  for (let i = 0; i < text.length; i++) {
+    const code = text.charCodeAt(i);
+    if (code === 10) {
+      lines += 1;
+    } else if (code === 13) {
+      lines += 1;
+      if (i + 1 < text.length && text.charCodeAt(i + 1) === 10) i += 1;
+    }
+  }
+  return lines;
 }
 
 function setFileStatus(message, isError = false) {
@@ -344,15 +354,18 @@ function getOrCreateWorker() {
     state.worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
     state.worker.addEventListener("message", (event) => {
       const { requestId, ok, result, error } = event.data || {};
+      const originalText = state.pendingTexts.get(requestId) ?? "";
+      state.pendingTexts.delete(requestId);
       if (requestId !== state.requestSeq) return;
       if (!ok) {
         setFileStatus(`Processing error: ${error || "Worker failed."}`, true);
         return;
       }
       state.mapper = createPseudonymMapper(result.mapperEntries || []);
-      applySanitizationResult({ ...result, mapper: state.mapper });
+      applySanitizationResult({ ...result, originalText, mapper: state.mapper });
     });
     state.worker.addEventListener("error", () => {
+      state.pendingTexts.clear();
       state.worker?.terminate();
       state.worker = null;
       processInputOnMainThread();
@@ -392,6 +405,8 @@ function processInput() {
   }
 
   state.requestSeq += 1;
+  state.pendingTexts.clear();
+  state.pendingTexts.set(state.requestSeq, text);
   if (!state.persistMapping) state.mapper.reset();
   worker.postMessage({
     requestId: state.requestSeq,
@@ -559,10 +574,7 @@ function loadSample(kind) {
   processInput();
 }
 
-/* Theme forced to light — dark mode disabled */
-
-function bindModeAndThemeEvents() {
-  // Force light theme — dark mode disabled
+function bindModeEvents() {
   document.documentElement.setAttribute("data-theme", "light");
 
   const modeButtons = document.querySelectorAll(".seg-btn[data-mode]");
@@ -731,7 +743,7 @@ async function runOnDeviceAIReview() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  bindModeAndThemeEvents();
+  bindModeEvents();
   bindFormatAndDetectorEvents();
   bindInputAndExportEvents();
   syncFormatButtons();

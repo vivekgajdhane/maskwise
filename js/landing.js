@@ -93,25 +93,42 @@ Emergency Contact: PHONE_01`
  * @returns {void}
  */
 export function initWorkflowTabs() {
-  const tabs = document.querySelectorAll(".tab-pill");
+  const tabs = Array.from(document.querySelectorAll(".tab-pill"));
+  const panelEl = document.getElementById("workflow-panel");
   const oldCodeEl = document.getElementById("workflow-old-code");
   const newCodeEl = document.getElementById("workflow-new-code");
   if (!tabs.length || !oldCodeEl || !newCodeEl) return;
 
-  tabs.forEach((tab) => {
-    tab.addEventListener("click", () => {
-      tabs.forEach((t) => {
-        t.classList.remove("active");
-        t.setAttribute("aria-selected", "false");
-      });
-      tab.classList.add("active");
-      tab.setAttribute("aria-selected", "true");
+  const activateTab = (tab) => {
+    tabs.forEach((t) => {
+      const isSelected = t === tab;
+      t.classList.toggle("active", isSelected);
+      t.setAttribute("aria-selected", String(isSelected));
+      t.setAttribute("tabindex", isSelected ? "0" : "-1");
+    });
 
-      const scenarioKey = tab.getAttribute("data-scenario") || "support";
-      const scenario = WORKFLOW_SCENARIOS[scenarioKey] || WORKFLOW_SCENARIOS.support;
+    if (panelEl && tab.id) panelEl.setAttribute("aria-labelledby", tab.id);
 
-      oldCodeEl.textContent = scenario.old;
-      newCodeEl.textContent = scenario.new;
+    const scenarioKey = tab.getAttribute("data-scenario") || "support";
+    const scenario = WORKFLOW_SCENARIOS[scenarioKey] || WORKFLOW_SCENARIOS.support;
+
+    oldCodeEl.textContent = scenario.old;
+    newCodeEl.textContent = scenario.new;
+  };
+
+  tabs.forEach((tab, idx) => {
+    tab.addEventListener("click", () => activateTab(tab));
+    tab.addEventListener("keydown", (event) => {
+      let nextIdx = -1;
+      if (event.key === "ArrowRight" || event.key === "ArrowDown") nextIdx = (idx + 1) % tabs.length;
+      else if (event.key === "ArrowLeft" || event.key === "ArrowUp") nextIdx = (idx - 1 + tabs.length) % tabs.length;
+      else if (event.key === "Home") nextIdx = 0;
+      else if (event.key === "End") nextIdx = tabs.length - 1;
+      if (nextIdx !== -1) {
+        event.preventDefault();
+        tabs[nextIdx].focus();
+        activateTab(tabs[nextIdx]);
+      }
     });
   });
 }

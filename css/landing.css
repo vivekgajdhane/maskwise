@@ -198,9 +198,6 @@
     transform: none !important;
     visibility: visible !important;
   }
-  .rotator-controls {
-    display: none !important;
-  }
 }
 
 /* Mobbin-style inline rounded badge pills woven directly into headline typography */
