@@ -17,18 +17,32 @@
 <body>
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
+  <!-- Minimalist Top Navigation Bar -->
   <header class="topbar">
     <div class="container topbar-inner">
-      <a href="./" class="brand-link" aria-label="Maskwise home">
-        <div class="brand">
-          <img src="assets/maskwise-logo.png" alt="Maskwise logo" class="brand-logo" width="48" height="32">
-          <div class="brand-text">
-            <span class="brand-title">Maskwise</span>
-            <p class="brand-subtitle">Smart redaction that never leaves your device.</p>
+      <div class="topbar-left">
+        <a href="./" class="brand-link" aria-label="Maskwise home">
+          <div class="brand">
+            <img src="assets/maskwise-logo.png" alt="Maskwise logo" class="brand-logo" width="48" height="32">
+            <div class="brand-text">
+              <span class="brand-title">Maskwise</span>
+              <p class="brand-subtitle">Smart redaction that never leaves your device.</p>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
+        <span class="version-tag">v2.4 · Local Sandbox</span>
+      </div>
 
+      <!-- Center Nav Links -->
+      <nav class="topbar-nav" aria-label="Main navigation">
+        <a href="#showcase" class="nav-link">Showcase</a>
+        <a href="#bento" class="nav-link">Platform</a>
+        <a href="#agents" class="nav-link">AI Agents</a>
+        <a href="#stories" class="nav-link">Case Studies</a>
+        <a href="#security" class="nav-link">Security</a>
+      </nav>
+
+      <!-- Right Actions -->
       <div class="topbar-actions">
         <button type="button" id="theme-toggle" class="btn btn-secondary btn-icon" aria-pressed="false" aria-label="Toggle dark mode">
           <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -49,150 +63,628 @@
         </button>
 
         <a href="analyze/" class="btn btn-primary">Launch App</a>
+
+        <button type="button" id="mobile-menu-toggle" class="btn btn-secondary btn-icon mobile-toggle" aria-expanded="false" aria-controls="mobile-nav" aria-label="Toggle navigation menu">
+          <svg class="icon-hamburger" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobile-nav" class="mobile-nav" hidden>
+      <div class="container mobile-nav-inner">
+        <a href="#showcase" class="mobile-nav-link">Showcase</a>
+        <a href="#bento" class="mobile-nav-link">Platform</a>
+        <a href="#agents" class="mobile-nav-link">AI Agents</a>
+        <a href="#stories" class="mobile-nav-link">Case Studies</a>
+        <a href="#security" class="mobile-nav-link">Security</a>
+        <a href="analyze/" class="btn btn-primary btn-block">Launch App</a>
       </div>
     </div>
   </header>
 
   <main id="main-content" class="landing-main">
-    <section class="landing-section">
+    <!-- Dynamic Inline-Visual Hero Section -->
+    <section class="landing-section hero-section">
       <div class="container">
-        <div class="hero-content">
-          <p class="hero-kicker">100% Client-Side Privacy Tool</p>
-          <h1 class="hero-title">Clean your text before you share it.</h1>
+        <div class="hero-header-wrap">
+          <div class="hero-kicker-pill">
+            <span class="pulse-dot"></span>
+            <span>Zero-Network Client-Side Sanitization</span>
+          </div>
+
+          <!-- Headline with Mobbin-style inline icon badges woven into typography -->
+          <h1 class="hero-title">
+            Where
+            <span class="inline-pill inline-pill-teams">
+              <svg class="pill-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              teams
+            </span>
+            and
+            <span class="inline-pill inline-pill-agents">
+              <svg class="pill-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>
+              AI agents
+            </span>
+            sanitize data
+            <span class="inline-pill inline-pill-secure">
+              <svg class="pill-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+              with zero leaks
+            </span>
+          </h1>
+
           <p class="hero-subhead">
-            Maskwise detects and redacts emails, phone numbers, IP addresses, Indian PAN, Aadhaar, and credit cards directly in your browser, with zero file uploads.
+            Maskwise detects, classifies, and redacts emails, phone numbers, IPs, Indian PAN, Aadhaar, and credit cards directly in your browser. No cloud relays, zero API hops, and ReDoS-immune checksum validation.
           </p>
+
           <div class="hero-actions">
-            <a href="analyze/" class="btn btn-primary btn-lg">Launch App</a>
-            <a href="#how" class="btn btn-secondary btn-lg">How it works</a>
+            <a href="analyze/" class="btn btn-primary btn-lg">
+              <span>Launch App</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+              </svg>
+            </a>
+            <a href="#showcase" class="btn btn-secondary btn-lg">Explore Showcase</a>
+          </div>
+
+          <div class="hero-trust-strip">
+            <span class="trust-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> 100% Client-Side FileReader</span>
+            <span class="trust-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Luhn & Verhoeff Checksums</span>
+            <span class="trust-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> 3 Redaction Modes</span>
+            <span class="trust-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Strict CSP connect-src 'none'</span>
+          </div>
+        </div>
+
+        <!-- Large Rounded Showcase Frame (border-radius: 20px–24px) -->
+        <div class="showcase-frame" aria-label="Maskwise client-side sanitization interface preview">
+          <div class="showcase-window-header">
+            <div class="window-controls">
+              <span class="dot dot-red"></span>
+              <span class="dot dot-yellow"></span>
+              <span class="dot dot-green"></span>
+            </div>
+            <div class="window-address-bar">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <span>maskwise.local/analyze</span>
+              <span class="badge-airgap">Air-Gapped Sandbox · 0 Network Calls</span>
+            </div>
+            <div class="window-latency-badge">&lt; 1 ms local</div>
+          </div>
+
+          <div class="showcase-body">
+            <div class="showcase-toolbar">
+              <div class="toolbar-modes">
+                <span class="mode-pill">Full Mask</span>
+                <span class="mode-pill">Partial Mask</span>
+                <span class="mode-pill active">● Pseudonymize</span>
+              </div>
+              <div class="toolbar-detectors">
+                <span class="tag-pill tag-card">CARD (Luhn Valid)</span>
+                <span class="tag-pill tag-aadhaar">AADHAAR (Verhoeff)</span>
+                <span class="tag-pill tag-pan">PAN (Valid)</span>
+                <span class="tag-pill tag-email">EMAIL</span>
+                <span class="tag-pill tag-phone">PHONE</span>
+              </div>
+            </div>
+
+            <div class="showcase-panels">
+              <div class="showcase-pane raw-pane">
+                <div class="pane-header">
+                  <span class="pane-title">Raw Telemetry & Chat Input</span>
+                  <span class="pane-badge badge-warning">5 PII Detected</span>
+                </div>
+                <pre class="pane-code">User: <mark class="pii-mark pii-email" data-tag="EMAIL">priya.patel@acme-systems.in</mark>
+Support: <mark class="pii-mark pii-phone" data-tag="PHONE">+91 98765 43210</mark>
+Tax ID: <mark class="pii-mark pii-pan" data-tag="PAN">ABCPE1234F</mark>
+UIDAI: <mark class="pii-mark pii-aadhaar" data-tag="AADHAAR">9999 9999 0019</mark>
+Payment: <mark class="pii-mark pii-credit_card" data-tag="CARD">4532-0151-1283-0366</mark>
+Origin: <mark class="pii-mark pii-ip" data-tag="IP">192.168.1.104</mark></pre>
+              </div>
+
+              <div class="showcase-pane sanitized-pane">
+                <div class="pane-header">
+                  <span class="pane-title">Sanitized Output Stream</span>
+                  <span class="pane-badge badge-success">Clean & Safe to Share</span>
+                </div>
+                <pre class="pane-code">User: <mark class="redacted-mark">USER_01</mark>
+Support: <mark class="redacted-mark">PHONE_01</mark>
+Tax ID: <mark class="redacted-mark">PAN_01</mark>
+UIDAI: <mark class="redacted-mark">AADHAAR_01</mark>
+Payment: <mark class="redacted-mark">CARD_01</mark>
+Origin: <mark class="redacted-mark">IP_01</mark></pre>
+              </div>
+            </div>
+
+            <div class="showcase-footer">
+              <span>● Status: 6 PII tokens protected</span>
+              <span>● Processing time: 0.8 ms</span>
+              <span>● Outbound requests: 0 bytes</span>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="how" class="landing-section">
+    <!-- Interactive Problem-to-Solution Showcase Carousel/Tabs -->
+    <section id="showcase" class="landing-section">
       <div class="container">
         <div class="section-head">
-          <h2 class="section-title">How it works</h2>
-          <p class="section-desc">Three local steps from raw logs or CSVs to share-safe output.</p>
+          <p class="section-kicker">Workflow Evolution</p>
+          <h2 class="section-title">Data sanitization took hours. Now it takes 1 ms.</h2>
+          <p class="section-desc">Toggle real-world workflows below to see how Maskwise transforms sensitive logs, support chats, and records before you share them with external tools or AI agents.</p>
         </div>
-        <div class="three-col">
-          <article class="card">
-            <span class="card-step">Step 01</span>
-            <h3 class="card-title">Paste or upload</h3>
-            <p class="card-text">Paste logs, tickets, or notes, or drop a .txt or .csv file (up to 5 MB) decoded locally via FileReader.</p>
-          </article>
-          <article class="card">
-            <span class="card-step">Step 02</span>
-            <h3 class="card-title">Choose a mode</h3>
-            <p class="card-text">Pick Full Mask, Partial Mask, or Consistent Pseudonymization and toggle individual PII detectors live.</p>
-          </article>
-          <article class="card">
-            <span class="card-step">Step 03</span>
-            <h3 class="card-title">Review and download</h3>
-            <p class="card-text">Audit highlights side-by-side with entity counts, then copy or download the sanitized .txt or .csv file.</p>
-          </article>
-        </div>
-      </div>
-    </section>
 
-    <section class="landing-section">
-      <div class="container">
-        <div class="section-head">
-          <h2 class="section-title">What it detects</h2>
-          <p class="section-desc">Each detector pairs linear-time patterns with structural or checksum validation to cut false positives.</p>
+        <!-- Pill filter tabs -->
+        <div class="tab-filter-bar" role="tablist" aria-label="Workflow scenarios">
+          <button type="button" class="tab-pill active" role="tab" id="tab-support" aria-selected="true" aria-controls="panel-support" data-scenario="support">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span>Support Tickets</span>
+          </button>
+          <button type="button" class="tab-pill" role="tab" id="tab-ai" aria-selected="false" aria-controls="panel-ai" data-scenario="ai">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
+            <span>AI Chat & Prompts</span>
+          </button>
+          <button type="button" class="tab-pill" role="tab" id="tab-dev" aria-selected="false" aria-controls="panel-dev" data-scenario="dev">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            <span>Developer Logs</span>
+          </button>
+          <button type="button" class="tab-pill" role="tab" id="tab-hr" aria-selected="false" aria-controls="panel-hr" data-scenario="hr">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span>HR & Financial</span>
+          </button>
         </div>
-        <div class="three-col">
-          <article class="card">
-            <div><mark class="pii-mark pii-credit_card" data-tag="CARD">Credit Card</mark></div>
-            <p class="card-text">Validated with the Luhn (mod 10) checksum and IIN issuer hints so random 16-digit IDs are ignored.</p>
-          </article>
-          <article class="card">
-            <div><mark class="pii-mark pii-aadhaar" data-tag="AADHAAR">Aadhaar</mark></div>
-            <p class="card-text">12-digit UIDAI format validated with the Verhoeff dihedral checksum to catch typos and lookalikes.</p>
-          </article>
-          <article class="card">
-            <div><mark class="pii-mark pii-pan" data-tag="PAN">Indian PAN</mark></div>
-            <p class="card-text">Enforces word boundaries and validates the 4th-character holder code against official entity types.</p>
-          </article>
-          <article class="card">
-            <div><mark class="pii-mark pii-phone" data-tag="PHONE">Phone</mark></div>
-            <p class="card-text">Matches Indian (+91 / 0) and E.164 international numbers while rejecting substrings of longer digit runs.</p>
-          </article>
-          <article class="card">
-            <div><mark class="pii-mark pii-ip" data-tag="IP">IP Address</mark></div>
-            <p class="card-text">Strict 0–255 IPv4 octets without leading zeros, plus full and compressed IPv6 addresses.</p>
-          </article>
-          <article class="card">
-            <div><mark class="pii-mark pii-email" data-tag="EMAIL">Email</mark></div>
-            <p class="card-text">Case-insensitive RFC local parts with + tags and subdomains, safe against ReDoS backtracking.</p>
-          </article>
-        </div>
-      </div>
-    </section>
 
-    <section class="landing-section">
-      <div class="container">
-        <div class="section-head">
-          <h2 class="section-title">Three redaction modes</h2>
-          <p class="section-desc">Switch strategies on the fly without re-uploading or losing formatting.</p>
-        </div>
-        <div class="three-col">
-          <article class="card">
-            <h3 class="card-title">Full Mask</h3>
-            <p class="card-text">Replaces every match with a fixed block or optional typed tag.</p>
-            <code class="mode-example">[REDACTED] / [REDACTED:EMAIL]</code>
-          </article>
-          <article class="card">
-            <h3 class="card-title">Partial Mask</h3>
-            <p class="card-text">Keeps minimal verification context while masking sensitive digits.</p>
-            <code class="mode-example">XXXX-XXXX-0366 · j***@example.test</code>
-          </article>
-          <article class="card">
-            <h3 class="card-title">Pseudonymize</h3>
-            <p class="card-text">Maps recurring normalized entities to consistent numbered tokens.</p>
-            <code class="mode-example">USER_01 · PHONE_01 · CARD_01</code>
-          </article>
-        </div>
-      </div>
-    </section>
+        <!-- Dynamic problem-to-solution card -->
+        <div id="workflow-panel" class="workflow-card" role="tabpanel" aria-labelledby="tab-support">
+          <div class="workflow-split">
+            <!-- Left: Old way -->
+            <div class="workflow-col workflow-old">
+              <div class="workflow-col-header">
+                <div class="col-status-pill status-danger">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span>The Old Way (Slow & Leaky)</span>
+                </div>
+                <span class="workflow-risk-badge">High Risk of Data Exposure</span>
+              </div>
+              <div class="workflow-code-box">
+                <pre id="workflow-old-code" class="workflow-code">Customer: rahul.sharma@enterprise.com
+Phone: +91 98765 12345
+Issue: Card ending in 4532 0151 1283 0366 charged twice.
+Aadhaar verified: 9999 9999 0019
+Server IP: 10.0.4.15</pre>
+              </div>
+              <ul class="workflow-bullets">
+                <li><span class="bullet-x">✕</span> Manual find-and-replace misses edge cases and typos</li>
+                <li><span class="bullet-x">✕</span> Sending data to cloud sanitization APIs violates compliance</li>
+                <li><span class="bullet-x">✕</span> Inconsistent pseudonyms break cross-document debugging</li>
+              </ul>
+            </div>
 
-    <section class="landing-section">
-      <div class="container">
-        <div class="section-head">
-          <h2 class="section-title">Privacy you can verify</h2>
-          <p class="section-desc">Built so you do not have to take privacy on faith.</p>
-        </div>
-        <div class="two-col">
-          <article class="card">
-            <h3 class="card-title">CSP connect-src 'none'</h3>
-            <p class="card-text">Every page ships a strict Content-Security-Policy meta tag that blocks outbound fetch, XHR, WebSocket, and beacon calls at the browser level.</p>
-          </article>
-          <article class="card">
-            <h3 class="card-title">Zero external requests</h3>
-            <p class="card-text">No analytics, no CDN scripts, and self-hosted Sora fonts in /fonts. Inspect the source or run the test suite offline at any time.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="landing-section">
-      <div class="container">
-        <div class="cta-band">
-          <div class="cta-copy">
-            <h2 class="section-title">Ready to sanitize a file or log?</h2>
-            <p class="section-desc">Open the workspace to load sample noisy data or drop your own .txt / .csv file.</p>
+            <!-- Right: With Maskwise -->
+            <div class="workflow-col workflow-new">
+              <div class="workflow-col-header">
+                <div class="col-status-pill status-success">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  <span>With Maskwise (Instant & Air-Gapped)</span>
+                </div>
+                <span class="workflow-speed-badge">&lt; 1 ms · 100% Client-Side</span>
+              </div>
+              <div class="workflow-code-box">
+                <pre id="workflow-new-code" class="workflow-code">Customer: USER_01
+Phone: PHONE_01
+Issue: Card ending in CARD_01 charged twice.
+Aadhaar verified: AADHAAR_01
+Server IP: IP_01</pre>
+              </div>
+              <ul class="workflow-bullets">
+                <li><span class="bullet-check">✓</span> Automatic detection with Luhn & Verhoeff checksum validation</li>
+                <li><span class="bullet-check">✓</span> Executed 100% inside your browser; zero bytes sent over the network</li>
+                <li><span class="bullet-check">✓</span> Consistent pseudonym mapping preserves referential context</li>
+              </ul>
+            </div>
           </div>
-          <a href="analyze/" class="btn btn-primary btn-lg">Launch App</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modular Bento Grid ("One Platform for All Your Needs") -->
+    <section id="bento" class="landing-section">
+      <div class="container">
+        <div class="section-head">
+          <p class="section-kicker">Powerful Privacy Engine</p>
+          <h2 class="section-title">One platform for all your sanitization needs</h2>
+          <p class="section-desc">Engineered from the ground up for privacy engineers, developers, and compliance teams.</p>
+        </div>
+
+        <div class="bento-grid">
+          <!-- Bento 1: Wide card -->
+          <article class="bento-card bento-wide">
+            <div class="bento-content">
+              <span class="bento-tag">Checksum Precision</span>
+              <h3 class="bento-title">Algorithmic Checksums — Zero Guesswork</h3>
+              <p class="bento-desc">Validate credit card numbers with the Luhn (mod 10) algorithm and Aadhaar numbers with the Verhoeff dihedral group D5 checksum so random 12 or 16-digit strings are never falsely flagged.</p>
+            </div>
+            <div class="bento-visual bento-checksum-visual">
+              <div class="checksum-flow">
+                <div class="flow-step">
+                  <span class="flow-label">Raw Digits</span>
+                  <code class="flow-code">4532 0151 1283 0366</code>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                  <span class="flow-label">Luhn Mod 10</span>
+                  <code class="flow-code">∑(d_i) mod 10 == 0</code>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-badge badge-valid">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                  VALID VISA CARD
+                </div>
+              </div>
+              <div class="checksum-flow">
+                <div class="flow-step">
+                  <span class="flow-label">12-Digit UID</span>
+                  <code class="flow-code">9999 9999 0019</code>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                  <span class="flow-label">Verhoeff D5</span>
+                  <code class="flow-code">d(F, p(i, c)) == 0</code>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-badge badge-valid">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                  VALID AADHAAR
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Bento 2: Single card -->
+          <article class="bento-card">
+            <div class="bento-content">
+              <span class="bento-tag">Referential Integrity</span>
+              <h3 class="bento-title">Consistent Pseudonymization</h3>
+              <p class="bento-desc">Recurring emails, IDs, and phones map to the exact same placeholder throughout documents without storing state or exposing raw keys.</p>
+            </div>
+            <div class="bento-visual bento-map-visual">
+              <div class="token-mapping-list">
+                <div class="mapping-item">
+                  <span class="map-raw">alice@corp.test</span>
+                  <span class="map-arrow">→</span>
+                  <span class="map-token">USER_01</span>
+                </div>
+                <div class="mapping-item">
+                  <span class="map-raw">+91 98765 43210</span>
+                  <span class="map-arrow">→</span>
+                  <span class="map-token">PHONE_01</span>
+                </div>
+                <div class="mapping-item">
+                  <span class="map-raw">alice@corp.test</span>
+                  <span class="map-arrow">→</span>
+                  <span class="map-token">USER_01</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Bento 3: Single card -->
+          <article class="bento-card">
+            <div class="bento-content">
+              <span class="bento-tag">Data Formats</span>
+              <h3 class="bento-title">Streaming CSV RFC-4180</h3>
+              <p class="bento-desc">Clean structured tables while preserving embedded commas, multiline cells, and prepending apostrophes to prevent spreadsheet formula injection.</p>
+            </div>
+            <div class="bento-visual bento-csv-visual">
+              <div class="mini-sheet">
+                <div class="sheet-row sheet-head">
+                  <span>Name</span>
+                  <span>Email</span>
+                  <span>Status</span>
+                </div>
+                <div class="sheet-row">
+                  <span>Alice</span>
+                  <span class="cell-redacted">USER_01</span>
+                  <span class="cell-shield">Guarded</span>
+                </div>
+                <div class="sheet-row">
+                  <span>Bob</span>
+                  <span class="cell-redacted">USER_02</span>
+                  <span class="cell-shield">Guarded</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Bento 4: Wide card -->
+          <article class="bento-card bento-wide">
+            <div class="bento-content">
+              <span class="bento-tag">Zero Trust Security</span>
+              <h3 class="bento-title">Air-Gapped Client Architecture</h3>
+              <p class="bento-desc">Runs entirely inside your browser sandbox. A strict Content-Security-Policy with <code>connect-src 'none'</code> physically blocks outbound fetch, XHR, WebSocket, and beacon calls at the browser kernel.</p>
+            </div>
+            <div class="bento-visual bento-network-visual">
+              <div class="network-meter">
+                <div class="meter-stat">
+                  <span class="stat-value">0 Bytes</span>
+                  <span class="stat-label">Outbound Network Egress</span>
+                </div>
+                <div class="meter-stat">
+                  <span class="stat-value">connect-src 'none'</span>
+                  <span class="stat-label">Enforced Browser CSP</span>
+                </div>
+                <div class="meter-stat">
+                  <span class="stat-value">100% Local</span>
+                  <span class="stat-label">FileReader In-Memory Processing</span>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Prompt / Agent Integration Preview Block -->
+    <section id="agents" class="landing-section">
+      <div class="container">
+        <div class="section-head">
+          <p class="section-kicker">AI & Agent Workflows</p>
+          <h2 class="section-title">Give your AI agents access to clean, compliant context</h2>
+          <p class="section-desc">Sanitize enterprise chat logs, CRM transcripts, and user prompts before feeding them into LLM agents or RAG vector databases.</p>
+        </div>
+
+        <div class="agent-showcase-card">
+          <!-- Prompt bar -->
+          <div class="agent-prompt-bar">
+            <div class="prompt-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
+            </div>
+            <div class="prompt-input-text">
+              <span class="prompt-label">Agent Instruction:</span>
+              <span class="prompt-query">"Sanitize customer escalation transcript before feeding to Anthropic Claude & OpenAI agent..."</span>
+            </div>
+            <button type="button" id="run-agent-preview" class="btn btn-primary btn-sm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>Run Agent Filter</span>
+            </button>
+          </div>
+
+          <!-- Real-time status indicators -->
+          <div class="agent-status-pipeline">
+            <div class="status-step active" id="agent-step-1">
+              <span class="step-icon">●</span>
+              <span>1. Ingesting prompt (4.2 KB)</span>
+            </div>
+            <div class="status-arrow">→</div>
+            <div class="status-step active" id="agent-step-2">
+              <span class="step-icon">✓</span>
+              <span>2. Checksums verified (Luhn & Verhoeff)</span>
+            </div>
+            <div class="status-arrow">→</div>
+            <div class="status-step active" id="agent-step-3">
+              <span class="step-icon">✓</span>
+              <span>3. 14 PII tokens protected</span>
+            </div>
+            <div class="status-arrow">→</div>
+            <div class="status-step active" id="agent-step-4">
+              <span class="step-icon">✓</span>
+              <span>4. LLM context safe</span>
+            </div>
+          </div>
+
+          <!-- Horizontal strip of result cards -->
+          <div class="agent-results-strip">
+            <div class="result-token-card">
+              <span class="token-kind tag-email">EMAIL</span>
+              <span class="token-value">john.doe@company.test</span>
+              <span class="token-arrow">→</span>
+              <span class="token-output">USER_01</span>
+            </div>
+            <div class="result-token-card">
+              <span class="token-kind tag-phone">PHONE</span>
+              <span class="token-value">+91 98765 43210</span>
+              <span class="token-arrow">→</span>
+              <span class="token-output">PHONE_01</span>
+            </div>
+            <div class="result-token-card">
+              <span class="token-kind tag-pan">PAN</span>
+              <span class="token-value">ABCPE1234F</span>
+              <span class="token-arrow">→</span>
+              <span class="token-output">PAN_01</span>
+            </div>
+            <div class="result-token-card">
+              <span class="token-kind tag-aadhaar">AADHAAR</span>
+              <span class="token-value">9999 9999 0019</span>
+              <span class="token-arrow">→</span>
+              <span class="token-output">AADHAAR_01</span>
+            </div>
+            <div class="result-token-card">
+              <span class="token-kind tag-card">CARD</span>
+              <span class="token-value">4532-0151-1283-0366</span>
+              <span class="token-arrow">→</span>
+              <span class="token-output">CARD_01</span>
+            </div>
+          </div>
+
+          <div class="agent-context-preview">
+            <div class="context-preview-header">
+              <span>Sanitized Prompt Ready for AI Ingestion</span>
+              <span class="context-stats">284 tokens · 0 risk</span>
+            </div>
+            <pre class="context-preview-code">System: You are an enterprise analytics assistant. Analyze this sanitized customer case:
+"User [USER_01] submitted ticket from [IP_01]. Transaction [CARD_01] verified under PAN [PAN_01].
+Contact [PHONE_01] confirmed resolution."</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Editorial Case Studies, Pull-Quote & Specialized Tier Banner -->
+    <section id="stories" class="landing-section">
+      <div class="container">
+        <div class="section-head">
+          <p class="section-kicker">Built for Real Teams</p>
+          <h2 class="section-title">Trusted for mission-critical workflows</h2>
+          <p class="section-desc">From AI prompt engineering to customer support auditing, Maskwise protects data wherever text is shared.</p>
+        </div>
+
+        <div class="three-col case-studies-grid">
+          <article class="card story-card">
+            <div class="story-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
+            </div>
+            <h3 class="card-title">AI Engineering & RAG Pipelines</h3>
+            <p class="card-text">Safely index internal documents and chat transcripts into vector databases without embedding customer phone numbers, tax IDs, or payment details.</p>
+            <span class="story-tag">LLM Safety</span>
+          </article>
+
+          <article class="card story-card">
+            <div class="story-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <h3 class="card-title">Customer Support & DevOps</h3>
+            <p class="card-text">Export sanitized bug reports, error stack traces, and ticket notes to public GitHub issues or Jira boards with zero risk of customer PII leakage.</p>
+            <span class="story-tag">Incident Sharing</span>
+          </article>
+
+          <article class="card story-card">
+            <div class="story-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            </div>
+            <h3 class="card-title">Compliance & Privacy Officers</h3>
+            <p class="card-text">Comply with DPDP Act 2023, GDPR, and HIPAA by equipping staff with a zero-friction, client-side tool that never uploads text off-device.</p>
+            <span class="story-tag">Regulatory Audit</span>
+          </article>
+        </div>
+
+        <!-- Pull-Quote Block -->
+        <div class="quote-card">
+          <svg class="quote-glyph" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+          </svg>
+          <blockquote class="quote-text">
+            "Maskwise eliminated our data-leak anxiety overnight. Our engineering teams can share sanitized debug logs and prompt transcripts with zero fear of exposing customer credentials."
+          </blockquote>
+          <div class="quote-author">
+            <div class="quote-avatar">PS</div>
+            <div class="quote-meta">
+              <span class="quote-name">Priya Sharma</span>
+              <span class="quote-role">Head of Security Architecture · Enterprise Privacy Forum</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Specialized Feature Highlight Banner -->
+        <div id="security" class="feature-banner">
+          <div class="feature-banner-copy">
+            <span class="banner-kicker">Guaranteed Air-Gapped Privacy</span>
+            <h2 class="banner-title">Zero Server Footprint. 100% Privacy by Design.</h2>
+            <p class="banner-desc">Every detection algorithm and redaction transformer executes strictly in browser memory. Outbound network sockets are disabled by kernel-level CSP policies.</p>
+          </div>
+          <div class="banner-badges">
+            <div class="badge-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>connect-src 'none'</span>
+            </div>
+            <div class="badge-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+              <span>Local FileReader</span>
+            </div>
+            <div class="badge-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <span>0 KB Network Wire</span>
+            </div>
+            <div class="badge-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+              <span>ReDoS-Immune</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Closing CTA Card -->
+        <div class="cta-closing-card">
+          <h2 class="closing-title">Ready to clean your text before you share it?</h2>
+          <p class="closing-desc">No registration, no API keys, and zero telemetry. Launch the workspace now and sanitize text or CSV files in milliseconds.</p>
+          <div class="closing-actions">
+            <a href="analyze/" class="btn btn-primary btn-lg">
+              <span>Launch Maskwise Workspace</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <a href="tests/tests.html" class="btn btn-secondary btn-lg">Run Offline Test Suite</a>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
+  <!-- Structured Multi-Column Footer -->
   <footer class="site-footer">
-    <div class="container footer-inner">
-      <span>Enforced via CSP (<code>connect-src 'none'</code>) · Zero external requests · Plain vanilla ES modules</span>
-      <a href="tests/tests.html" class="footer-link">Open browser test suite</a>
+    <div class="container footer-grid">
+      <div class="footer-col brand-col">
+        <a href="./" class="brand-link" aria-label="Maskwise home">
+          <div class="brand">
+            <img src="assets/maskwise-logo.png" alt="Maskwise logo" class="brand-logo" width="48" height="32">
+            <div class="brand-text">
+              <span class="brand-title">Maskwise</span>
+              <p class="brand-subtitle">Smart redaction that never leaves your device.</p>
+            </div>
+          </div>
+        </a>
+        <p class="footer-about">
+          High-performance, dependency-light client-side PII detection and redaction web application. Built for privacy engineering, AI pipelines, and zero-trust workflows.
+        </p>
+        <span class="footer-csp-pill">Enforced CSP: connect-src 'none'</span>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading">PII Detectors</h4>
+        <ul class="footer-links">
+          <li><span>Credit Cards (Luhn mod 10)</span></li>
+          <li><span>Indian Aadhaar (Verhoeff D5)</span></li>
+          <li><span>Indian PAN (Holder types)</span></li>
+          <li><span>IPv4 & IPv6 Addresses</span></li>
+          <li><span>Email Addresses</span></li>
+          <li><span>Phone Numbers (E.164 & +91)</span></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading">Sanitization Modes</h4>
+        <ul class="footer-links">
+          <li><span>Full Mask ([REDACTED])</span></li>
+          <li><span>Partial Mask (Contextual)</span></li>
+          <li><span>Consistent Pseudonymization</span></li>
+          <li><span>CSV RFC-4180 Streaming</span></li>
+          <li><span>Formula Injection Defense</span></li>
+          <li><span>Diff View & Export</span></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading">Verification & Security</h4>
+        <ul class="footer-links">
+          <li><a href="tests/tests.html" class="footer-link">In-Browser Test Suite</a></li>
+          <li><a href="analyze/" class="footer-link">Analyzer Workspace</a></li>
+          <li><a href="#security" class="footer-link">Security Architecture</a></li>
+          <li><a href="https://github.com" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub Repository</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p class="footer-copy">© 2026 Maskwise. 100% Client-Side Open Source Tool. Built for PromptWars x NIAT_Pune.</p>
+      <div class="footer-badges">
+        <span>Zero External Dependencies</span>
+        <span>·</span>
+        <span>Vanilla ES Modules</span>
+        <span>·</span>
+        <span>Self-Hosted Sora Fonts</span>
+      </div>
     </div>
   </footer>
 

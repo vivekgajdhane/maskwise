@@ -95,3 +95,13 @@ Chronological log of prompts, design intent, and verified outcomes across all bu
 ### Left-Align Landing Page Hero Content
 - **Intent**: Wrap `.hero-content` inside `<div class="container">` and set explicit `margin: 0; text-align: left;` so the hero section aligns flush with the topbar brand logo and section headers rather than centering when isolated.
 - **Outcome**: Updated `index.html` and `css/landing.css`. Verified with CDP measurement that `.brand` (16px), `.hero-content` (16px), and `.section-head` (16px) share the exact same left coordinate with zero overflow across viewports. All tests pass (`11/11`).
+
+### Mobbin-Inspired Landing Page UI & Component Redesign
+- **Intent**: Redesign the landing page layout, visual hierarchy, and responsive structure modeled directly after Mobbin while strictly keeping existing brand colors (`#F3F3E0`, `#133E87`, `#608BC1`, `#CBDCEB`), logo, and Sora typography:
+  1. Minimalist single-row navigation header with logo, version badge, center links, primary CTA, and responsive mobile menu drawer.
+  2. Dynamic inline-visual hero with typography-embedded rounded icon pills (`Where [teams] and [AI agents] sanitize data [with zero leaks]`), dual CTAs, and large rounded showcase frame (`border-radius: 22px`).
+  3. Interactive problem-to-solution showcase carousel with pill filters (`Support Tickets`, `AI Chat & Prompts`, `Developer Logs`, `HR & Financial Records`) that dynamically switch live comparison cards with zero lag.
+  4. Modular asymmetrical bento grid (`border-radius: 20px`) highlighting Luhn/Verhoeff checksums, consistent pseudonymization, streaming CSV RFC-4180 with formula protection, and air-gapped CSP architecture.
+  5. Interactive AI agent integration showcase with prompt simulation bar, animated 4-step status pipeline, and categorized horizontal token chips.
+  6. Editorial 3-column case studies, executive pull-quote block with monogram avatar, specialized air-gap feature banner, centered closing CTA, and structured 4-column footer.
+- **Outcome**: Updated `index.html`, `css/landing.css`, and `js/landing.js`. Verified via Chrome CDP across 1440px, 768px, and 360px viewports (0 horizontal overflow, >=44px touch targets, 0 network requests, 0 console errors) and automated unit test suite passing (`11/11`).
