@@ -21,7 +21,10 @@ Organizations and individuals routinely paste or share application logs, support
 CloakText uses a strict unidirectional client-side pipeline with zero external network calls:
 
 ```text
-[ index.html + css/styles.css + fonts/sora-*.woff2 ]
+[ / (index.html + css/tokens.css + css/landing.css + js/landing.js) ]
+                         │  "Launch App" -> analyze/
+                         ▼
+[ /analyze/ (analyze/index.html + css/tokens.css + css/styles.css) ]
                          │
                          ▼
                     [ js/ui.js ]  ◄──  [ js/samples.js ]
@@ -121,8 +124,9 @@ Because browsers enforce CORS on native ES modules (`<script type="module">`) wh
 # 1. Start a lightweight static server from the repository root
 python3 -m http.server 8000 --bind 127.0.0.1
 
-# 2. Open index.html in your browser
-open http://127.0.0.1:8000/index.html
+# 2. Open the landing page or analyzer directly
+open http://127.0.0.1:8000/
+open http://127.0.0.1:8000/analyze/
 ```
 
 ### Running the Test Suite

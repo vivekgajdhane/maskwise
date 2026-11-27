@@ -559,6 +559,26 @@ function loadSample(kind) {
   processInput();
 }
 
+const THEME_STORAGE_KEY = "cloaktext-theme"; // Theme preference only; never stores user text or PII
+
+function readStoredTheme() {
+  try {
+    const saved = window.localStorage?.getItem(THEME_STORAGE_KEY);
+    if (saved === "light" || saved === "dark") return saved;
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function saveThemePreference(theme) {
+  try {
+    window.localStorage?.setItem(THEME_STORAGE_KEY, theme);
+  } catch {
+    // Ignore storage denial in restricted browser contexts
+  }
+}
+
 function applyTheme(theme) {
   state.theme = theme;
   document.documentElement.setAttribute("data-theme", theme);
@@ -570,14 +590,18 @@ function applyTheme(theme) {
 
 function bindModeAndThemeEvents() {
   const mediaQuery = window.matchMedia?.("(prefers-color-scheme: dark)");
-  applyTheme(mediaQuery?.matches ? "dark" : "light");
+  const stored = readStoredTheme();
+  if (stored) state.themeOverridden = true;
+  applyTheme(stored || (mediaQuery?.matches ? "dark" : "light"));
   mediaQuery?.addEventListener("change", (event) => {
     if (!state.themeOverridden) applyTheme(event.matches ? "dark" : "light");
   });
 
   document.getElementById("theme-toggle")?.addEventListener("click", () => {
     state.themeOverridden = true;
-    applyTheme(state.theme === "light" ? "dark" : "light");
+    const next = state.theme === "light" ? "dark" : "light";
+    saveThemePreference(next);
+    applyTheme(next);
     announce(`Switched to ${state.theme} theme`);
   });
 

@@ -3,44 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="CloakText is a 100% client-side PII sanitizer for emails, phone numbers, IP addresses, Indian PAN, Aadhaar, and credit cards.">
+  <meta name="description" content="CloakText finds and redacts emails, phone numbers, IPs, PAN, Aadhaar, and credit cards entirely inside your browser.">
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: blob:; worker-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none';">
   <title>CloakText — Client-Side PII Sanitizer</title>
   <link rel="icon" href="data:,">
   <link rel="preload" as="font" type="font/woff2" href="fonts/sora-latin-400-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="fonts/sora-latin-500-normal.woff2" crossorigin>
   <link rel="preload" as="font" type="font/woff2" href="fonts/sora-latin-600-normal.woff2" crossorigin>
   <link rel="preload" as="font" type="font/woff2" href="fonts/sora-latin-700-normal.woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/landing.css">
 </head>
 <body>
-  <a href="#raw-input" class="skip-link">Skip to source input</a>
-  <div id="status-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
   <header class="topbar">
     <div class="container topbar-inner">
-      <div class="brand">
-        <span class="brand-icon" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <path d="M9 12l2 2 4-4"/>
-          </svg>
-        </span>
-        <div class="brand-text">
-          <h1 class="brand-title">CloakText</h1>
-          <p class="brand-subtitle">Client-Side PII Sanitizer</p>
+      <a href="./" class="brand-link" aria-label="CloakText home">
+        <div class="brand">
+          <span class="brand-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="CloakText logo">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+          </span>
+          <div class="brand-text">
+            <span class="brand-title">CloakText</span>
+            <p class="brand-subtitle">Client-Side PII Sanitizer</p>
+          </div>
         </div>
-      </div>
+      </a>
 
       <div class="topbar-actions">
-        <div class="privacy-badge" role="status" aria-label="Privacy guarantee: 100% client-side, nothing leaves your browser">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-          <span>100% client-side, nothing leaves your browser</span>
-        </div>
-
         <button type="button" id="theme-toggle" class="btn btn-secondary btn-icon" aria-pressed="false" aria-label="Toggle dark mode">
           <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
@@ -58,229 +52,160 @@
           </svg>
           <span class="theme-label">Dark</span>
         </button>
+
+        <a href="analyze/" class="btn btn-primary">Launch App</a>
       </div>
     </div>
   </header>
 
-  <main class="container workspace">
-    <section class="panel input-panel" aria-labelledby="input-heading">
-      <div class="panel-header">
-        <div class="panel-title-group">
-          <h2 id="input-heading" class="panel-title">1. Source Input</h2>
-          <div class="format-switch" role="radiogroup" aria-label="Input format">
-            <button type="button" class="format-btn is-active" data-format="text" role="radio" aria-checked="true" tabindex="0">Plain Text</button>
-            <button type="button" class="format-btn" data-format="csv" role="radio" aria-checked="false" tabindex="-1">CSV</button>
-          </div>
-          <span id="input-meta" class="meta-text">0 chars · 0 lines</span>
-        </div>
-        <div class="panel-actions">
-          <button type="button" id="load-sample-text" class="btn btn-secondary">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <line x1="16" y1="13" x2="8" y2="13"/>
-              <line x1="16" y1="17" x2="8" y2="17"/>
-            </svg>
-            Load sample noisy data
-          </button>
-          <button type="button" id="load-sample-csv" class="btn btn-secondary">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <line x1="3" y1="9" x2="21" y2="9"/>
-              <line x1="3" y1="15" x2="21" y2="15"/>
-              <line x1="9" y1="3" x2="9" y2="21"/>
-            </svg>
-            Load sample CSV
-          </button>
-          <button type="button" id="clear-input" class="btn btn-ghost">Clear</button>
-        </div>
-      </div>
-
-      <div id="dropzone" class="dropzone">
-        <label for="file-input" class="sr-only">Upload a .txt or .csv file</label>
-        <input type="file" id="file-input" class="sr-only" accept=".txt,.csv,text/plain,text/csv">
-        <div class="dropzone-content">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="17 8 12 3 7 8"/>
-            <line x1="12" y1="3" x2="12" y2="15"/>
-          </svg>
-          <span>Drop a <strong>.txt</strong> or <strong>.csv</strong> file here (max 5 MB)</span>
-          <button type="button" id="browse-files-btn" class="btn btn-secondary">Browse local files</button>
-        </div>
-        <span id="file-status" class="file-status" role="status" aria-live="polite">No file loaded</span>
-      </div>
-
-      <div class="textarea-wrap">
-        <label for="raw-input" class="sr-only">Raw text or CSV content to sanitize</label>
-        <textarea
-          id="raw-input"
-          class="raw-textarea"
-          rows="8"
-          spellcheck="false"
-          placeholder="Paste raw logs, support tickets, clinical notes, resumes, or CSV data here — or click 'Load sample noisy data' above..."
-        ></textarea>
-      </div>
-    </section>
-
-    <section class="panel controls-panel" aria-labelledby="controls-heading">
-      <div class="controls-top">
-        <div class="mode-group">
-          <h2 id="controls-heading" class="panel-title">2. Redaction Mode</h2>
-          <div class="segmented" role="radiogroup" aria-label="Redaction mode">
-            <button type="button" class="seg-btn is-active" data-mode="full" role="radio" aria-checked="true" tabindex="0">Full Mask</button>
-            <button type="button" class="seg-btn" data-mode="partial" role="radio" aria-checked="false" tabindex="-1">Partial Mask</button>
-            <button type="button" class="seg-btn" data-mode="pseudonym" role="radio" aria-checked="false" tabindex="-1">Pseudonymize</button>
+  <main id="main-content" class="landing-main">
+    <section class="landing-section">
+      <div class="container hero-grid">
+        <div>
+          <p class="hero-kicker">100% Client-Side Privacy Tool</p>
+          <h1 class="hero-title">Clean your text before you share it.</h1>
+          <p class="hero-subhead">
+            CloakText detects and redacts emails, phone numbers, IP addresses, Indian PAN, Aadhaar, and credit cards directly in your browser, with zero file uploads.
+          </p>
+          <div class="hero-actions">
+            <a href="analyze/" class="btn btn-primary btn-lg">Launch App</a>
+            <a href="#how" class="btn btn-secondary btn-lg">How it works</a>
           </div>
         </div>
 
-        <div id="mode-options" class="mode-options">
-          <label id="typed-mask-option" class="checkbox-label">
-            <input type="checkbox" id="typed-mask-toggle">
-            <span>Include type tag (<code>[REDACTED:EMAIL]</code>)</span>
-          </label>
-          <div id="pseudonym-actions" class="pseudonym-actions" hidden>
-            <label class="checkbox-label">
-              <input type="checkbox" id="persist-mapping-toggle">
-              <span>Keep mapping across edits</span>
-            </label>
-            <button type="button" id="toggle-mapping-btn" class="btn btn-secondary" aria-expanded="false" aria-controls="mapping-panel">Show mapping table</button>
-            <button type="button" id="reset-mapping-btn" class="btn btn-secondary">Reset mapping</button>
+        <div class="sample-card" aria-label="Before and after sanitization preview using synthetic data">
+          <div class="sample-pane">
+            <span class="sample-pane-label">Before (Raw Synthetic Ticket)</span>
+            <pre class="sample-code">User: <mark class="pii-mark pii-email" data-tag="EMAIL">demo.user@example.test</mark>
+Call: <mark class="pii-mark pii-phone" data-tag="PHONE">+91 98765 43210</mark>
+PAN: <mark class="pii-mark pii-pan" data-tag="PAN">ABCPE1234F</mark> | IP: <mark class="pii-mark pii-ip" data-tag="IP">192.168.14.22</mark>
+Card: <mark class="pii-mark pii-credit_card" data-tag="CARD">4532-0151-1283-0366</mark></pre>
           </div>
-        </div>
-      </div>
-
-      <div class="detectors-bar">
-        <div class="detectors-header">
-          <span class="sub-label">Active Detectors &amp; Live Counts</span>
-          <div class="summary-pills">
-            <span id="total-detected-badge" class="stat-pill">0 entities detected</span>
-            <span id="rejected-summary-badge" class="stat-pill stat-pill-muted">0 invalid candidates ignored</span>
+          <div class="sample-pane">
+            <span class="sample-pane-label">After (Pseudonymized Locally)</span>
+            <pre class="sample-code">User: <mark class="redacted-mark">USER_01</mark>
+Call: <mark class="redacted-mark">PHONE_01</mark>
+PAN: <mark class="redacted-mark">PAN_01</mark> | IP: <mark class="redacted-mark">IP_01</mark>
+Card: <mark class="redacted-mark">CARD_01</mark></pre>
           </div>
-        </div>
-
-        <div id="detector-toggles" class="detector-grid" role="group" aria-label="PII detector toggles">
-          <label class="detector-chip" data-type="email">
-            <input type="checkbox" data-detector="email" checked>
-            <span class="chip-name">Email</span>
-            <span class="chip-count" data-count="email">0</span>
-          </label>
-          <label class="detector-chip" data-type="phone">
-            <input type="checkbox" data-detector="phone" checked>
-            <span class="chip-name">Phone</span>
-            <span class="chip-count" data-count="phone">0</span>
-          </label>
-          <label class="detector-chip" data-type="ip">
-            <input type="checkbox" data-detector="ip" checked>
-            <span class="chip-name">IP Address</span>
-            <span class="chip-count" data-count="ip">0</span>
-          </label>
-          <label class="detector-chip" data-type="pan">
-            <input type="checkbox" data-detector="pan" checked>
-            <span class="chip-name">Indian PAN</span>
-            <span class="chip-count" data-count="pan">0</span>
-          </label>
-          <label class="detector-chip" data-type="aadhaar">
-            <input type="checkbox" data-detector="aadhaar" checked>
-            <span class="chip-name">Aadhaar</span>
-            <span class="chip-count" data-count="aadhaar">0</span>
-          </label>
-          <label class="detector-chip" data-type="credit_card">
-            <input type="checkbox" data-detector="credit_card" checked>
-            <span class="chip-name">Credit Card</span>
-            <span class="chip-count" data-count="credit_card">0</span>
-          </label>
-        </div>
-      </div>
-
-      <div id="mapping-panel" class="mapping-panel" hidden>
-        <div class="mapping-header">
-          <h3 class="sub-label">Pseudonym Mapping Table</h3>
-          <span id="mapping-count" class="meta-text">0 unique entities mapped</span>
-        </div>
-        <div class="table-scroll">
-          <table class="mapping-table">
-            <thead>
-              <tr>
-                <th scope="col">Placeholder</th>
-                <th scope="col">Type</th>
-                <th scope="col">Normalized Value</th>
-                <th scope="col">Occurrences</th>
-              </tr>
-            </thead>
-            <tbody id="mapping-tbody">
-              <tr>
-                <td colspan="4" class="empty-cell">No pseudonyms generated yet. Switch to Pseudonymize mode with PII input.</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       </div>
     </section>
 
-    <section class="panel diff-panel" aria-labelledby="diff-heading">
-      <div class="panel-header diff-header">
-        <div class="panel-title-group">
-          <h2 id="diff-heading" class="panel-title">3. Audit &amp; Side-by-Side Diff</h2>
-          <span id="perf-badge" class="meta-text">Ready</span>
+    <section id="how" class="landing-section">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">How it works</h2>
+          <p class="section-desc">Three local steps from raw logs or CSVs to share-safe output.</p>
         </div>
-
-        <div class="export-actions">
-          <button type="button" id="ai-review-btn" class="btn btn-secondary" disabled>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/>
-            </svg>
-            <span>Review for missed PII (on-device)</span>
-          </button>
-          <button type="button" id="copy-output" class="btn btn-secondary" disabled>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-            </svg>
-            <span id="copy-label">Copy sanitized</span>
-          </button>
-          <button type="button" id="download-output" class="btn btn-primary" disabled>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-            <span id="download-label">Download sanitized .txt</span>
-          </button>
+        <div class="three-col">
+          <article class="card">
+            <span class="card-step">Step 01</span>
+            <h3 class="card-title">Paste or upload</h3>
+            <p class="card-text">Paste logs, tickets, or notes, or drop a .txt or .csv file (up to 5 MB) decoded locally via FileReader.</p>
+          </article>
+          <article class="card">
+            <span class="card-step">Step 02</span>
+            <h3 class="card-title">Choose a mode</h3>
+            <p class="card-text">Pick Full Mask, Partial Mask, or Consistent Pseudonymization and toggle individual PII detectors live.</p>
+          </article>
+          <article class="card">
+            <span class="card-step">Step 03</span>
+            <h3 class="card-title">Review and download</h3>
+            <p class="card-text">Audit highlights side-by-side with entity counts, then copy or download the sanitized .txt or .csv file.</p>
+          </article>
         </div>
       </div>
+    </section>
 
-      <div class="legend" aria-label="Entity highlight legend">
-        <span class="legend-item"><mark class="pii-mark pii-credit_card" data-tag="CARD">Credit Card</mark></span>
-        <span class="legend-item"><mark class="pii-mark pii-aadhaar" data-tag="AADHAAR">Aadhaar</mark></span>
-        <span class="legend-item"><mark class="pii-mark pii-pan" data-tag="PAN">PAN</mark></span>
-        <span class="legend-item"><mark class="pii-mark pii-phone" data-tag="PHONE">Phone</mark></span>
-        <span class="legend-item"><mark class="pii-mark pii-ip" data-tag="IP">IP</mark></span>
-        <span class="legend-item"><mark class="pii-mark pii-email" data-tag="EMAIL">Email</mark></span>
+    <section class="landing-section">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">What it detects</h2>
+          <p class="section-desc">Each detector pairs linear-time patterns with structural or checksum validation to cut false positives.</p>
+        </div>
+        <div class="three-col">
+          <article class="card">
+            <div><mark class="pii-mark pii-credit_card" data-tag="CARD">Credit Card</mark></div>
+            <p class="card-text">Validated with the Luhn (mod 10) checksum and IIN issuer hints so random 16-digit IDs are ignored.</p>
+          </article>
+          <article class="card">
+            <div><mark class="pii-mark pii-aadhaar" data-tag="AADHAAR">Aadhaar</mark></div>
+            <p class="card-text">12-digit UIDAI format validated with the Verhoeff dihedral checksum to catch typos and lookalikes.</p>
+          </article>
+          <article class="card">
+            <div><mark class="pii-mark pii-pan" data-tag="PAN">Indian PAN</mark></div>
+            <p class="card-text">Enforces word boundaries and validates the 4th-character holder code against official entity types.</p>
+          </article>
+          <article class="card">
+            <div><mark class="pii-mark pii-phone" data-tag="PHONE">Phone</mark></div>
+            <p class="card-text">Matches Indian (+91 / 0) and E.164 international numbers while rejecting substrings of longer digit runs.</p>
+          </article>
+          <article class="card">
+            <div><mark class="pii-mark pii-ip" data-tag="IP">IP Address</mark></div>
+            <p class="card-text">Strict 0–255 IPv4 octets without leading zeros, plus full and compressed IPv6 addresses.</p>
+          </article>
+          <article class="card">
+            <div><mark class="pii-mark pii-email" data-tag="EMAIL">Email</mark></div>
+            <p class="card-text">Case-insensitive RFC local parts with + tags and subdomains, safe against ReDoS backtracking.</p>
+          </article>
+        </div>
       </div>
+    </section>
 
-      <div id="ai-review-note" class="ai-review-note" role="status" aria-live="polite" hidden></div>
-
-      <div class="mobile-diff-tabs" role="tablist" aria-label="Diff view panes">
-        <button type="button" class="tab-btn is-active" data-tab="original" role="tab" aria-selected="true" aria-controls="pane-original" tabindex="0">Original</button>
-        <button type="button" class="tab-btn" data-tab="sanitized" role="tab" aria-selected="false" aria-controls="pane-sanitized" tabindex="-1">Sanitized</button>
+    <section class="landing-section">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">Three redaction modes</h2>
+          <p class="section-desc">Switch strategies on the fly without re-uploading or losing formatting.</p>
+        </div>
+        <div class="three-col">
+          <article class="card">
+            <h3 class="card-title">Full Mask</h3>
+            <p class="card-text">Replaces every match with a fixed block or optional typed tag.</p>
+            <code class="mode-example">[REDACTED] / [REDACTED:EMAIL]</code>
+          </article>
+          <article class="card">
+            <h3 class="card-title">Partial Mask</h3>
+            <p class="card-text">Keeps minimal verification context while masking sensitive digits.</p>
+            <code class="mode-example">XXXX-XXXX-0366 · j***@example.test</code>
+          </article>
+          <article class="card">
+            <h3 class="card-title">Pseudonymize</h3>
+            <p class="card-text">Maps recurring normalized entities to consistent numbered tokens.</p>
+            <code class="mode-example">USER_01 · PHONE_01 · CARD_01</code>
+          </article>
+        </div>
       </div>
+    </section>
 
-      <div class="diff-grid">
-        <div id="pane-original" class="diff-pane is-active" role="region" aria-label="Original input with highlighted PII">
-          <div class="diff-pane-head">
-            <span class="diff-pane-title">Original (Detected PII)</span>
-            <span id="original-line-count" class="meta-text">0 lines</span>
+    <section class="landing-section">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">Privacy you can verify</h2>
+          <p class="section-desc">Built so you do not have to take privacy on faith.</p>
+        </div>
+        <div class="two-col">
+          <article class="card">
+            <h3 class="card-title">CSP connect-src 'none'</h3>
+            <p class="card-text">Every page ships a strict Content-Security-Policy meta tag that blocks outbound fetch, XHR, WebSocket, and beacon calls at the browser level.</p>
+          </article>
+          <article class="card">
+            <h3 class="card-title">Zero external requests</h3>
+            <p class="card-text">No analytics, no CDN scripts, and self-hosted Sora fonts in /fonts. Inspect the source or run the test suite offline at any time.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="landing-section">
+      <div class="container">
+        <div class="cta-band">
+          <div class="cta-copy">
+            <h2 class="section-title">Ready to sanitize a file or log?</h2>
+            <p class="section-desc">Open the workspace to load sample noisy data or drop your own .txt / .csv file.</p>
           </div>
-          <pre id="original-diff" class="diff-body" tabindex="0"><span class="empty-state">Paste text, upload a .txt/.csv file, or load sample noisy data to inspect detected PII.</span></pre>
-        </div>
-
-        <div id="pane-sanitized" class="diff-pane" role="region" aria-label="Sanitized output">
-          <div class="diff-pane-head">
-            <span class="diff-pane-title">Sanitized Output</span>
-            <span id="sanitized-line-count" class="meta-text">0 lines</span>
-          </div>
-          <pre id="sanitized-diff" class="diff-body" tabindex="0"><span class="empty-state">Sanitized output will appear here in real time.</span></pre>
+          <a href="analyze/" class="btn btn-primary btn-lg">Launch App</a>
         </div>
       </div>
     </section>
@@ -293,6 +218,6 @@
     </div>
   </footer>
 
-  <script type="module" src="js/ui.js"></script>
+  <script type="module" src="js/landing.js"></script>
 </body>
 </html>

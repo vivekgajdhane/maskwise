@@ -4,6 +4,7 @@
  */
 
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import test from "node:test";
 import { parseCSV, serializeCSV } from "../js/csv.js";
 import { detectPII, detectPIIWithStats } from "../js/detectors.js";
@@ -148,4 +149,21 @@ test("Security: XSS payloads remain inert and 50k ReDoS inputs finish under 50 m
     assert.equal(out.entities.length, 0);
     assert.ok(ms < 50, `ReDoS check took ${ms.toFixed(2)} ms`);
   }
+});
+
+test("Smoke: landing page and /analyze/ routes exist with proper script isolation", () => {
+  assert.equal(fs.existsSync("index.html"), true);
+  assert.equal(fs.existsSync("analyze/index.html"), true);
+  assert.equal(fs.existsSync("css/tokens.css"), true);
+  assert.equal(fs.existsSync("css/landing.css"), true);
+
+  const landingHtml = fs.readFileSync("index.html", "utf8");
+  const analyzerHtml = fs.readFileSync("analyze/index.html", "utf8");
+
+  assert.match(landingHtml, /href="analyze\/"/);
+  assert.match(landingHtml, /src="js\/landing\.js"/);
+  assert.doesNotMatch(landingHtml, /detectors\.js|redactors\.js|pipeline\.js|ui\.js/);
+
+  assert.match(analyzerHtml, /src="\.\.\/js\/ui\.js"/);
+  assert.match(analyzerHtml, /href="\.\.\/"/);
 });
