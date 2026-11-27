@@ -7,7 +7,12 @@ import { detectPIIWithStats } from "./detectors.js";
 import { createPseudonymMapper, redactText } from "./redactors.js";
 
 /**
- * Execute full detection and redaction over plain text or CSV input.
+ * Execute detection and redaction over plain text or CSV input.
+ * Edge cases: returns empty result structure for empty or non-string input.
+ *
+ * @param {string} text - Raw text or CSV payload.
+ * @param {object} [options={}] - Pipeline options (format, enabledTypes, mode, typedFullMask, mapper, guardFormula).
+ * @returns {{ format: string, originalText: string, sanitizedText: string, entities: Array<object>, replacements: Array<object>, rejected: object, mapper: object, csvStats: object|null, durationMs: number }}
  */
 export function runSanitization(text, options = {}) {
   const {
@@ -36,25 +41,12 @@ export function runSanitization(text, options = {}) {
   const t0 = performance.now();
 
   if (format === "csv") {
-    const result = sanitizeCSV(text, {
-      enabledTypes,
-      mode,
-      typedFullMask,
-      mapper,
-      guardFormula,
-    });
-    const t1 = performance.now();
-    return {
-      format: "csv",
-      ...result,
-      durationMs: t1 - t0,
-    };
+    const result = sanitizeCSV(text, { enabledTypes, mode, typedFullMask, mapper, guardFormula });
+    return { format: "csv", ...result, durationMs: performance.now() - t0 };
   }
 
   const { entities, rejected } = detectPIIWithStats(text, enabledTypes);
   const redaction = redactText(text, entities, mode, { typedFullMask, mapper });
-  const t1 = performance.now();
-
   return {
     format: "text",
     originalText: text,
@@ -64,6 +56,6 @@ export function runSanitization(text, options = {}) {
     rejected,
     mapper: redaction.mapper,
     csvStats: null,
-    durationMs: t1 - t0,
+    durationMs: performance.now() - t0,
   };
 }

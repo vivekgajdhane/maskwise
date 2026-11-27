@@ -2,30 +2,18 @@
  * Redaction strategies: Full Mask, Partial Mask, and Consistent Pseudonymization.
  */
 
-const FULL_MASK_LABELS = {
-  email: "EMAIL",
-  phone: "PHONE",
-  ip: "IP",
-  pan: "PAN",
-  aadhaar: "AADHAAR",
-  credit_card: "CARD",
-};
-
-const PSEUDONYM_PREFIX = {
-  email: "USER",
-  phone: "PHONE",
-  credit_card: "CARD",
-  aadhaar: "AADHAAR",
-  pan: "PAN",
-  ip: "IP",
-};
+import { FULL_MASK_LABELS, PSEUDONYM_PREFIX } from "./config.js";
 
 /**
- * Normalize an entity value prior to pseudonym dictionary lookup so
- * case and formatting variants map to the exact same placeholder.
+ * Normalize an entity value prior to pseudonym dictionary lookup so case and
+ * formatting variants map to the exact same placeholder.
+ *
+ * @param {string} type - Entity type identifier.
+ * @param {string} value - Raw matched substring.
+ * @returns {string} Canonical lookup key.
  */
 export function normalizeForMapping(type, value) {
-  const trimmed = value.trim();
+  const trimmed = String(value || "").trim();
   switch (type) {
     case "email":
       return trimmed.toLowerCase();
@@ -37,10 +25,7 @@ export function normalizeForMapping(type, value) {
     case "phone": {
       const compact = trimmed.replace(/[\s().-]/g, "");
       if (compact.startsWith("+")) {
-        if (/^\+0091[6-9]\d{9}$/.test(compact)) {
-          return `+91${compact.slice(5)}`;
-        }
-        return compact;
+        return /^\+0091[6-9]\d{9}$/.test(compact) ? `+91${compact.slice(5)}` : compact;
       }
       if (!trimmed.includes("(") && /^(?:0091|91|0)?[6-9]\d{9}$/.test(compact)) {
         return `+91${compact.slice(-10)}`;
@@ -55,7 +40,9 @@ export function normalizeForMapping(type, value) {
 }
 
 /**
- * Stateful mapper maintaining consistent deterministic placeholders per entity type.
+ * Create a stateful pseudonym mapper maintaining consistent numbered tokens per type.
+ *
+ * @returns {{ resolve: Function, beginRun: Function, entries: Function, reset: Function }}
  */
 export function createPseudonymMapper() {
   const keyToEntry = new Map();
@@ -71,9 +58,8 @@ export function createPseudonymMapper() {
         const nextNum = (typeCounters.get(type) || 0) + 1;
         typeCounters.set(type, nextNum);
         const prefix = PSEUDONYM_PREFIX[type] || "ENTITY";
-        const token = `${prefix}_${String(nextNum).padStart(2, "0")}`;
         entry = {
-          token,
+          token: `${prefix}_${String(nextNum).padStart(2, "0")}`,
           type,
           normalized,
           count: 0,
@@ -133,10 +119,7 @@ function maskDigitsKeepLast4(raw, defaultFormattedMask) {
 function partialMaskCard(raw) {
   return maskDigitsKeepLast4(raw, (digits) => {
     const last4 = digits.slice(-4);
-    if (digits.length === 16) {
-      return `XXXX-XXXX-XXXX-${last4}`;
-    }
-    return `${"X".repeat(Math.max(0, digits.length - 4))}${last4}`;
+    return digits.length === 16 ? `XXXX-XXXX-XXXX-${last4}` : `${"X".repeat(Math.max(0, digits.length - 4))}${last4}`;
   });
 }
 
@@ -144,46 +127,22 @@ function partialMaskAadhaar(raw) {
   return maskDigitsKeepLast4(raw, (digits) => `XXXX-XXXX-${digits.slice(-4)}`);
 }
 
-function partialMaskPan(raw) {
-  if (raw.length !== 10) {
-    return "[REDACTED:PAN]";
-  }
-  return `${raw.slice(0, 2)}XXXXXX${raw.slice(-2)}`;
-}
-
 function partialMaskPhone(raw) {
   const digits = raw.replace(/\D/g, "");
   const keepFrom = Math.max(0, digits.length - 4);
-
-  // If unseparated Indian number (e.g. +919876543210 or 9876543210)
   if (!/[\s()-]/.test(raw)) {
     const last4 = digits.slice(-4);
-    if (raw.startsWith("+91") && digits.length === 12) {
-      return `+91-XXXXX-X${last4}`;
-    }
+    if (raw.startsWith("+91") && digits.length === 12) return `+91-XXXXX-X${last4}`;
     return `${"X".repeat(Math.max(0, digits.length - 4))}${last4}`;
   }
-
-  // Preserve country prefix (+CC) if separated, mask subscriber digits except last 4
-  let prefixEnd = 0;
-  if (raw.startsWith("+")) {
-    const prefixMatch = raw.match(/^\+\d{1,3}[\s-]+/);
-    if (prefixMatch) {
-      prefixEnd = prefixMatch[0].length;
-    }
-  }
-
-  const prefixDigitCount = raw.slice(0, prefixEnd).replace(/\D/g, "").length;
+  const prefixMatch = raw.startsWith("+") ? raw.match(/^\+\d{1,3}[\s-]+/) : null;
+  const prefixDigits = prefixMatch ? prefixMatch[0].replace(/\D/g, "").length : 0;
   let digitIndex = 0;
   let out = "";
   for (let i = 0; i < raw.length; i++) {
     const ch = raw[i];
     if (ch >= "0" && ch <= "9") {
-      if (digitIndex < prefixDigitCount || digitIndex >= keepFrom) {
-        out += ch;
-      } else {
-        out += "X";
-      }
+      out += digitIndex < prefixDigits || digitIndex >= keepFrom ? ch : "X";
       digitIndex += 1;
     } else {
       out += ch;
@@ -192,87 +151,56 @@ function partialMaskPhone(raw) {
   return out;
 }
 
-function partialMaskEmail(raw) {
-  const atIndex = raw.indexOf("@");
-  if (atIndex < 1) {
-    return "***";
-  }
-  const firstChar = raw[0];
-  const domain = raw.slice(atIndex);
-  return `${firstChar}***${domain}`;
-}
-
 function partialMaskIP(raw) {
   if (!raw.includes(":")) {
     const parts = raw.split(".");
-    if (parts.length === 4) {
-      return `${parts[0]}.${parts[1]}.XXX.XXX`;
-    }
-    return "XXX.XXX.XXX.XXX";
+    return parts.length === 4 ? `${parts[0]}.${parts[1]}.XXX.XXX` : "XXX.XXX.XXX.XXX";
   }
-
-  // IPv6 (with optional IPv4-mapped tail)
   if (raw.includes(".")) {
     const lastColon = raw.lastIndexOf(":");
-    const prefix = raw.slice(0, lastColon + 1);
     const v4Parts = raw.slice(lastColon + 1).split(".");
-    if (v4Parts.length === 4) {
-      return `${prefix}${v4Parts[0]}.${v4Parts[1]}.XXX.XXX`;
-    }
+    if (v4Parts.length === 4) return `${raw.slice(0, lastColon + 1)}${v4Parts[0]}.${v4Parts[1]}.XXX.XXX`;
   }
-
   if (raw.includes("::")) {
     const [left] = raw.split("::");
-    if (!left) {
-      return "::XXXX";
-    }
-    const leftGroups = left.split(":").slice(0, 2);
-    return `${leftGroups.join(":")}::XXXX`;
+    return left ? `${left.split(":").slice(0, 2).join(":")}::XXXX` : "::XXXX";
   }
-
   const groups = raw.split(":");
-  const head = groups.slice(0, 2).join(":");
-  const tail = Array(Math.max(1, groups.length - 2)).fill("XXXX").join(":");
-  return `${head}:${tail}`;
+  return `${groups.slice(0, 2).join(":")}:${Array(Math.max(1, groups.length - 2)).fill("XXXX").join(":")}`;
 }
 
 /**
- * Format a single entity replacement according to the selected mode.
+ * Format a single entity replacement string for the requested redaction mode.
+ *
+ * @param {{ type: string, value: string }} entity - Detected PII entity.
+ * @param {"full"|"partial"|"pseudonym"} mode - Active redaction strategy.
+ * @param {{ typedFullMask?: boolean, mapper?: object }} [options] - Redaction options.
+ * @returns {string} Replacement string.
  */
 export function formatReplacement(entity, mode, options = {}) {
   const { typedFullMask = false, mapper } = options;
 
   if (mode === "full") {
-    if (typedFullMask) {
-      const label = FULL_MASK_LABELS[entity.type] || entity.type.toUpperCase();
-      return `[REDACTED:${label}]`;
-    }
-    return "[REDACTED]";
+    return typedFullMask ? `[REDACTED:${FULL_MASK_LABELS[entity.type] || entity.type.toUpperCase()}]` : "[REDACTED]";
   }
 
   if (mode === "partial") {
     switch (entity.type) {
-      case "credit_card":
-        return partialMaskCard(entity.value);
-      case "aadhaar":
-        return partialMaskAadhaar(entity.value);
-      case "pan":
-        return partialMaskPan(entity.value);
-      case "phone":
-        return partialMaskPhone(entity.value);
-      case "email":
-        return partialMaskEmail(entity.value);
-      case "ip":
-        return partialMaskIP(entity.value);
-      default:
-        return "[REDACTED]";
+      case "credit_card": return partialMaskCard(entity.value);
+      case "aadhaar": return partialMaskAadhaar(entity.value);
+      case "pan": return entity.value.length === 10 ? `${entity.value.slice(0, 2)}XXXXXX${entity.value.slice(-2)}` : "[REDACTED:PAN]";
+      case "phone": return partialMaskPhone(entity.value);
+      case "email": {
+        const at = entity.value.indexOf("@");
+        return at >= 1 ? `${entity.value[0]}***${entity.value.slice(at)}` : "***";
+      }
+      case "ip": return partialMaskIP(entity.value);
+      default: return "[REDACTED]";
     }
   }
 
   if (mode === "pseudonym") {
-    if (!mapper) {
-      throw new Error("Pseudonym mode requires a mapper instance.");
-    }
+    if (!mapper) throw new Error("Pseudonym mode requires a mapper instance.");
     return mapper.resolve(entity.type, entity.value);
   }
 
@@ -280,17 +208,18 @@ export function formatReplacement(entity, mode, options = {}) {
 }
 
 /**
- * Redact detected entities in text while tracking exact replacement offsets
- * for side-by-side diff highlighting.
+ * Redact detected entities in text while tracking exact replacement offsets.
+ *
+ * @param {string} text - Source plain text.
+ * @param {Array<object>} entities - Sorted non-overlapping detected entities.
+ * @param {"full"|"partial"|"pseudonym"} [mode="full"] - Redaction strategy.
+ * @param {{ typedFullMask?: boolean, mapper?: object }} [options={}] - Redaction options.
+ * @returns {{ sanitizedText: string, replacements: Array<object>, mapper: object }}
  */
 export function redactText(text, entities, mode = "full", options = {}) {
   const activeMapper = options.mapper || createPseudonymMapper();
   if (!text || !Array.isArray(entities) || entities.length === 0) {
-    return {
-      sanitizedText: text || "",
-      replacements: [],
-      mapper: activeMapper,
-    };
+    return { sanitizedText: text || "", replacements: [], mapper: activeMapper };
   }
 
   const parts = [];
@@ -304,16 +233,13 @@ export function redactText(text, entities, mode = "full", options = {}) {
       parts.push(unchanged);
       sanitizedLength += unchanged.length;
     }
-
     const replacement = formatReplacement(entity, mode, {
       typedFullMask: Boolean(options.typedFullMask),
       mapper: activeMapper,
     });
-
     const sanitizedStart = sanitizedLength;
     parts.push(replacement);
     sanitizedLength += replacement.length;
-
     replacements.push({
       type: entity.type,
       originalStart: entity.start,
@@ -323,17 +249,9 @@ export function redactText(text, entities, mode = "full", options = {}) {
       original: entity.value,
       replacement,
     });
-
     cursor = entity.end;
   }
 
-  if (cursor < text.length) {
-    parts.push(text.slice(cursor));
-  }
-
-  return {
-    sanitizedText: parts.join(""),
-    replacements,
-    mapper: activeMapper,
-  };
+  if (cursor < text.length) parts.push(text.slice(cursor));
+  return { sanitizedText: parts.join(""), replacements, mapper: activeMapper };
 }

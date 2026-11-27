@@ -1,0 +1,35 @@
+export default [
+  {
+    files: ["js/**/*.js", "tests/**/*.js", "tests/**/*.mjs"],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: "module",
+      globals: {
+        window: "readonly",
+        document: "readonly",
+        navigator: "readonly",
+        FileReader: "readonly",
+        TextDecoder: "readonly",
+        Blob: "readonly",
+        URL: "readonly",
+        Worker: "readonly",
+        self: "readonly",
+        performance: "readonly",
+        requestAnimationFrame: "readonly",
+        setTimeout: "readonly",
+        clearTimeout: "readonly",
+        console: "readonly",
+        process: "readonly",
+      },
+    },
+    rules: {
+      "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+      "no-undef": "error",
+      "no-eval": "error",
+      "no-implied-eval": "error",
+      "no-new-func": "error",
+      "prefer-const": "error",
+      "eqeqeq": ["error", "always"],
+    },
+  },
+];

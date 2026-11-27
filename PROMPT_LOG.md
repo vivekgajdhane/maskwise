@@ -51,3 +51,11 @@ Chronological log of prompts, design intent, and verified outcomes across all bu
 ## Phase 9: Pre-Submission Audit
 - **Intent**: Perform final verification of repo size (< 10 MB), `.gitignore`, single `main` branch, security grep (no `fetch`/`XHR`/`WebSocket`/`sendBeacon`/`localStorage`/`http(s)://`/`innerHTML`), end-to-end interactive sample/modes/diff/export flow, and 360px/768px/1440px layouts.
 - **Outcome**: Verified `du -sh .` is `700K` (including `.git`), `git branch -a` lists only `* main`, security grep returned 0 matches (`SECURITY_GREP_OK`), Node test suite passed `10/10`, and headless Chromium CDP audit verified all modes, CSV formula guard, mapping table, detector toggles, `sample-noisy-log.sanitized.txt` download trigger, `0` external requests, `0` console errors, and zero horizontal overflow across `360px`, `768px`, and `1440px`.
+
+---
+
+## Evaluation Parameter Hardening
+
+### Parameter 1: Code Quality
+- **Intent**: Centralize constants into `js/config.js`, keep all functions modular (`<= ~40` lines), add full JSDoc on every exported function, add `.editorconfig`, `.prettierrc`, and `eslint.config.js` (without `node_modules`), remove silent `catch` blocks, and add an `Architecture` section with module diagram and data flow to `README.md`.
+- **Outcome**: Refactored `js/validators.js`, `js/detectors.js`, `js/redactors.js`, `js/csv.js`, `js/pipeline.js`, and `js/ui.js`; added `js/config.js` and lint/format configs; documented architecture in `README.md`. Verified `node --check` and `node tests/tests.mjs` (`10/10` passing).

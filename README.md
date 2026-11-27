@@ -13,6 +13,54 @@ Organizations and individuals routinely paste or share application logs, support
 ## Features
 
 - **Six PII Detectors with Validation**: Email, Phone (Indian + international), IPv4/IPv6, Indian PAN, Aadhaar, and Credit Cards.
+
+---
+
+## Architecture
+
+CloakText uses a strict unidirectional client-side pipeline with zero external network calls:
+
+```text
+[ index.html + css/styles.css + fonts/sora-*.woff2 ]
+                         │
+                         ▼
+                    [ js/ui.js ]  ◄──  [ js/samples.js ]
+                    (DOM, FileReader,
+                     Blob export, state)
+                         │
+                         ▼
+                 [ js/pipeline.js ]
+                   /            \
+      Plain Text  /              \  RFC-4180 CSV
+                 ▼                ▼
+      [ js/detectors.js ]    [ js/csv.js ]
+      (Regex + Overlap)      (Per-cell + Formula Guard)
+                 │                │
+                 └───────┬────────┘
+                         ▼
+                [ js/validators.js ]
+                (Luhn, Verhoeff, PAN, IP)
+                         │
+                         ▼
+                [ js/redactors.js ]
+                (Full / Partial / Pseudonym)
+                         │
+                         ▼
+                 [ js/config.js ]
+                 (Shared constants & limits)
+```
+
+### Data Flow
+1. **Input**: User pastes text, clicks a 1-click sample loader (`js/samples.js`), or drops/selects a `.txt`/`.csv` file read locally via `FileReader`.
+2. **Orchestration**: `js/pipeline.js` routes plain text directly to `js/detectors.js` + `js/redactors.js`, or routes CSV through `js/csv.js` for RFC-4180 cell parsing and per-cell sanitization.
+3. **Detection & Validation**: `js/detectors.js` runs precompiled patterns and validates candidates via `js/validators.js`, resolving overlaps deterministically (`credit_card > aadhaar > pan > phone > ip > email`).
+4. **Redaction & Audit**: `js/redactors.js` applies Full Mask, Partial Mask, or normalized Consistent Pseudonymization while recording exact character offsets so `js/ui.js` can render both diff panes via `Text` nodes (`textContent` only) and export via `Blob`.
+
+---
+
+## Features
+
+- **Six PII Detectors with Validation**: Email, Phone (Indian + international), IPv4/IPv6, Indian PAN, Aadhaar, and Credit Cards.
 - **False-Positive Rejection**: Luhn checksum filtering for cards, Verhoeff dihedral checksum filtering for Aadhaar, strict IPv4 octet/leading-zero validation, PAN 4th-character entity-type validation, and digit-run boundary checks.
 - **Three Redaction Modes**: Full Mask (standard & typed), type-specific Partial Mask, and Consistent Pseudonymization with a live Mapping Table and Reset control.
 - **RFC-4180 CSV Sanitization**: Parses quoted fields, embedded commas, escaped quotes, and multiline cells; preserves Row 0 headers; neutralizes spreadsheet formula injection (`=`, `+`, `-`, `@`) with a leading apostrophe `'`.

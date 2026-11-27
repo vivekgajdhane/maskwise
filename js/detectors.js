@@ -1,9 +1,10 @@
 /**
  * PII detection engine: email, phone, IPv4/IPv6, Indian PAN, Aadhaar, and credit cards.
- * Uses linear-time ReDoS-safe regular expressions, strict boundary guards,
- * cryptographic/structural validation, and deterministic overlap resolution.
+ * Uses precompiled linear-time regexes, strict boundary guards, and deterministic
+ * bucket-indexed overlap resolution.
  */
 
+import { APP_CONFIG, ENTITY_TYPES, TYPE_PRIORITY } from "./config.js";
 import {
   detectCardIssuer,
   isValidAadhaar,
@@ -13,18 +14,8 @@ import {
   isValidPan,
 } from "./validators.js";
 
-export const ENTITY_TYPES = ["credit_card", "aadhaar", "pan", "phone", "ip", "email"];
+export { ENTITY_TYPES };
 
-const TYPE_PRIORITY = {
-  credit_card: 0,
-  aadhaar: 1,
-  pan: 2,
-  phone: 3,
-  ip: 4,
-  email: 5,
-};
-
-// Flat, ReDoS-safe patterns (no nested ambiguous quantifiers)
 const EMAIL_RE =
   /\b[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,24}\b/g;
 
@@ -59,53 +50,24 @@ function hasNumericChainBoundaryConflict(text, start, end) {
 function hasConsistentCardSeparators(raw) {
   const hasSpace = raw.includes(" ");
   const hasHyphen = raw.includes("-");
-  if (hasSpace && hasHyphen) {
-    return false;
-  }
-  if (!hasSpace && !hasHyphen) {
-    return true;
-  }
-  const sep = hasSpace ? " " : "-";
-  const groups = raw.split(sep);
-  // Prevent accidentally merging unrelated 2-digit tokens like timestamps ("20 26 11 27 10 53 48")
+  if (hasSpace && hasHyphen) return false;
+  if (!hasSpace && !hasHyphen) return true;
+
+  const groups = raw.split(hasSpace ? " " : "-");
   for (let i = 0; i < groups.length; i++) {
-    if (groups[i].length === 0) {
-      return false;
-    }
-    if (i < groups.length - 1 && groups[i].length < 3) {
-      return false;
-    }
+    if (groups[i].length === 0) return false;
+    if (i < groups.length - 1 && groups[i].length < 3) return false;
   }
   return true;
 }
 
-function isConsistentAadhaarGrouping(raw) {
-  if (!raw.includes(" ") && !raw.includes("-")) {
-    return true;
-  }
-  return !(raw.includes(" ") && raw.includes("-"));
-}
-
 function isValidEmailCandidate(text, value, start, end) {
-  if (value.length > 254) {
-    return false;
-  }
+  if (value.length > 254) return false;
   const atIndex = value.indexOf("@");
-  if (atIndex < 1 || atIndex > 64) {
-    return false;
-  }
-  if (start > 0 && text[start - 1] === ".") {
-    // Reject malformed ".user@domain.com" while allowing ellipsis "...user@domain.com"
-    if (start < 2 || text[start - 2] !== ".") {
-      return false;
-    }
-  }
-  if (start > 0 && EMAIL_LOCAL_BOUNDARY_RE.test(text[start - 1]) && text[start - 1] !== ".") {
-    return false;
-  }
-  if (end + 1 < text.length && text[end] === "." && /[A-Za-z0-9]/.test(text[end + 1])) {
-    return false;
-  }
+  if (atIndex < 1 || atIndex > 64) return false;
+  if (start > 0 && text[start - 1] === "." && (start < 2 || text[start - 2] !== ".")) return false;
+  if (start > 0 && EMAIL_LOCAL_BOUNDARY_RE.test(text[start - 1]) && text[start - 1] !== ".") return false;
+  if (end + 1 < text.length && text[end] === "." && /[A-Za-z0-9]/.test(text[end + 1])) return false;
   return true;
 }
 
@@ -116,26 +78,14 @@ function detectCards(text, candidates, rejected) {
     const value = match[0];
     const start = match.index;
     const end = start + value.length;
-    if (hasNumericChainBoundaryConflict(text, start, end)) {
-      continue;
-    }
-    if (!hasConsistentCardSeparators(value)) {
+    if (hasNumericChainBoundaryConflict(text, start, end) || !hasConsistentCardSeparators(value)) {
       continue;
     }
     const digits = value.replace(/\D/g, "");
-    if (digits.length < 13 || digits.length > 19) {
-      continue;
-    }
+    if (digits.length < 13 || digits.length > 19) continue;
     if (isValidLuhn(digits)) {
       const issuer = detectCardIssuer(digits);
-      candidates.push({
-        type: "credit_card",
-        start,
-        end,
-        value,
-        confidence: issuer === "Card" ? 0.88 : 0.99,
-        meta: { issuer },
-      });
+      candidates.push({ type: "credit_card", start, end, value, confidence: issuer === "Card" ? 0.88 : 0.99, meta: { issuer } });
     } else {
       rejected.push({ type: "luhn", start, end });
     }
@@ -149,21 +99,11 @@ function detectAadhaars(text, candidates, rejected) {
     const value = match[0];
     const start = match.index;
     const end = start + value.length;
-    if (hasNumericChainBoundaryConflict(text, start, end)) {
+    if (hasNumericChainBoundaryConflict(text, start, end) || (value.includes(" ") && value.includes("-"))) {
       continue;
     }
-    if (!isConsistentAadhaarGrouping(value)) {
-      continue;
-    }
-    const digits = value.replace(/\D/g, "");
-    if (isValidAadhaar(digits)) {
-      candidates.push({
-        type: "aadhaar",
-        start,
-        end,
-        value,
-        confidence: value.length > 12 ? 0.99 : 0.95,
-      });
+    if (isValidAadhaar(value.replace(/\D/g, ""))) {
+      candidates.push({ type: "aadhaar", start, end, value, confidence: value.length > 12 ? 0.99 : 0.95 });
     } else {
       rejected.push({ type: "verhoeff", start, end });
     }
@@ -178,14 +118,7 @@ function detectPans(text, candidates, rejected) {
     const start = match.index;
     const end = start + value.length;
     if (isValidPan(value)) {
-      candidates.push({
-        type: "pan",
-        start,
-        end,
-        value,
-        confidence: 0.98,
-        meta: { holderType: value[3] },
-      });
+      candidates.push({ type: "pan", start, end, value, confidence: 0.98, meta: { holderType: value[3] } });
     } else {
       rejected.push({ type: "pan", start, end });
     }
@@ -199,36 +132,16 @@ function detectPhones(text, candidates, rejected) {
     const value = match[0];
     const start = match.index;
     const end = start + value.length;
-
-    if (hasNumericChainBoundaryConflict(text, start, end)) {
+    if (hasNumericChainBoundaryConflict(text, start, end) || value.includes("  ") || value.includes("--")) {
       continue;
     }
-    if (value.includes("  ") || value.includes("--")) {
-      continue;
-    }
-
     const digits = value.replace(/\D/g, "");
     const hasPlus = value.startsWith("+");
-    if (hasPlus) {
-      if (digits.length < 7 || digits.length > 15) {
-        rejected.push({ type: "phone", start, end });
-        continue;
-      }
-      // Reject E.164 matches made of tiny space-separated chunks like "+1 23 45 67"
-      const parts = value.slice(1).trim().split(/[\s-]+/);
-      if (parts.length > 5) {
-        rejected.push({ type: "phone", start, end });
-        continue;
-      }
+    if (hasPlus && (digits.length < 7 || digits.length > 15 || value.slice(1).trim().split(/[\s-]+/).length > 5)) {
+      rejected.push({ type: "phone", start, end });
+      continue;
     }
-
-    candidates.push({
-      type: "phone",
-      start,
-      end,
-      value,
-      confidence: hasPlus || value.includes("(") ? 0.96 : 0.9,
-    });
+    candidates.push({ type: "phone", start, end, value, confidence: hasPlus || value.includes("(") ? 0.96 : 0.9 });
   }
 }
 
@@ -240,14 +153,7 @@ function detectIPs(text, candidates, rejected) {
     const start = match.index;
     const end = start + value.length;
     if (isValidIPv4(value)) {
-      candidates.push({
-        type: "ip",
-        start,
-        end,
-        value,
-        confidence: 0.98,
-        meta: { version: 4 },
-      });
+      candidates.push({ type: "ip", start, end, value, confidence: 0.98, meta: { version: 4 } });
     } else {
       rejected.push({ type: "ipv4", start, end });
     }
@@ -256,17 +162,8 @@ function detectIPs(text, candidates, rejected) {
   IPV6_CANDIDATE_RE.lastIndex = 0;
   while ((match = IPV6_CANDIDATE_RE.exec(text)) !== null) {
     const value = match[0];
-    const start = match.index;
-    const end = start + value.length;
     if (isValidIPv6(value)) {
-      candidates.push({
-        type: "ip",
-        start,
-        end,
-        value,
-        confidence: 0.97,
-        meta: { version: 6 },
-      });
+      candidates.push({ type: "ip", start: match.index, end: match.index + value.length, value, confidence: 0.97, meta: { version: 6 } });
     }
   }
 }
@@ -278,16 +175,9 @@ function detectEmails(text, candidates) {
     const value = match[0];
     const start = match.index;
     const end = start + value.length;
-    if (!isValidEmailCandidate(text, value, start, end)) {
-      continue;
+    if (isValidEmailCandidate(text, value, start, end)) {
+      candidates.push({ type: "email", start, end, value, confidence: 0.98 });
     }
-    candidates.push({
-      type: "email",
-      start,
-      end,
-      value,
-      confidence: 0.98,
-    });
   }
 }
 
@@ -295,59 +185,46 @@ function intervalsOverlap(a, b) {
   return a.start < b.end && b.start < a.end;
 }
 
-const BUCKET_SIZE = 128;
+function bucketHasOverlap(cand, buckets) {
+  const startBucket = Math.floor(cand.start / APP_CONFIG.BUCKET_SIZE);
+  const endBucket = Math.floor(Math.max(cand.start, cand.end - 1) / APP_CONFIG.BUCKET_SIZE);
+  for (let b = startBucket; b <= endBucket; b++) {
+    const list = buckets.get(b);
+    if (list && list.some((existing) => intervalsOverlap(cand, existing))) return true;
+  }
+  return false;
+}
 
-/**
- * Resolve overlapping detections deterministically in near-linear time:
- * credit_card > aadhaar > pan > phone > ip > email; longest match breaks ties.
- */
+function addToBuckets(cand, buckets) {
+  const startBucket = Math.floor(cand.start / APP_CONFIG.BUCKET_SIZE);
+  const endBucket = Math.floor(Math.max(cand.start, cand.end - 1) / APP_CONFIG.BUCKET_SIZE);
+  for (let b = startBucket; b <= endBucket; b++) {
+    let list = buckets.get(b);
+    if (!list) {
+      list = [];
+      buckets.set(b, list);
+    }
+    list.push(cand);
+  }
+}
+
 function resolveOverlaps(candidates) {
   const sorted = [...candidates].sort((a, b) => {
     const priorityDiff = TYPE_PRIORITY[a.type] - TYPE_PRIORITY[b.type];
-    if (priorityDiff !== 0) {
-      return priorityDiff;
-    }
+    if (priorityDiff !== 0) return priorityDiff;
     const lenDiff = b.end - b.start - (a.end - a.start);
-    if (lenDiff !== 0) {
-      return lenDiff;
-    }
-    return a.start - b.start;
+    return lenDiff !== 0 ? lenDiff : a.start - b.start;
   });
 
   const accepted = [];
   const buckets = new Map();
-
   for (const cand of sorted) {
-    const startBucket = Math.floor(cand.start / BUCKET_SIZE);
-    const endBucket = Math.floor(Math.max(cand.start, cand.end - 1) / BUCKET_SIZE);
-    let overlaps = false;
-
-    for (let b = startBucket; b <= endBucket && !overlaps; b++) {
-      const list = buckets.get(b);
-      if (!list) continue;
-      for (const existing of list) {
-        if (intervalsOverlap(cand, existing)) {
-          overlaps = true;
-          break;
-        }
-      }
-    }
-
-    if (!overlaps) {
+    if (!bucketHasOverlap(cand, buckets)) {
       accepted.push(cand);
-      for (let b = startBucket; b <= endBucket; b++) {
-        let list = buckets.get(b);
-        if (!list) {
-          list = [];
-          buckets.set(b, list);
-        }
-        list.push(cand);
-      }
+      addToBuckets(cand, buckets);
     }
   }
-
-  accepted.sort((a, b) => a.start - b.start);
-  return accepted;
+  return accepted.sort((a, b) => a.start - b.start);
 }
 
 function isCoveredBySortedEntities(rec, entities) {
@@ -355,22 +232,21 @@ function isCoveredBySortedEntities(rec, entities) {
   let hi = entities.length - 1;
   while (lo <= hi) {
     const mid = (lo + hi) >> 1;
-    const ent = entities[mid];
-    if (ent.end <= rec.start) {
-      lo = mid + 1;
-    } else if (ent.start >= rec.end) {
-      hi = mid - 1;
-    } else {
-      return true;
-    }
+    if (entities[mid].end <= rec.start) lo = mid + 1;
+    else if (entities[mid].start >= rec.end) hi = mid - 1;
+    else return true;
   }
   return false;
 }
 
 /**
- * Detect PII entities and report validation rejections.
- * @param {string} text
- * @param {Set<string>|string[]|undefined} enabledTypes
+ * Detect PII entities in text and return both resolved matches and validation rejections.
+ * Edge cases: returns empty arrays/zero stats for empty or non-string input; never double-counts
+ * a rejected span if an accepted higher-priority entity covers it.
+ *
+ * @param {string} text - Input text to scan.
+ * @param {Set<string>|string[]|undefined} enabledTypes - Optional active entity type filter.
+ * @returns {{ entities: Array<object>, rejected: { luhn: number, verhoeff: number, ipv4: number, pan: number, phone: number } }}
  */
 export function detectPIIWithStats(text, enabledTypes) {
   const emptyStats = { luhn: 0, verhoeff: 0, ipv4: 0, pan: 0, phone: 0 };
@@ -396,8 +272,6 @@ export function detectPIIWithStats(text, enabledTypes) {
   if (activeSet.has("email")) detectEmails(text, candidates);
 
   const entities = resolveOverlaps(candidates);
-
-  // Do not double-count a rejected candidate if an accepted higher/valid entity covers that span
   const rejected = { ...emptyStats };
   for (const rec of rejectedRecords) {
     if (!isCoveredBySortedEntities(rec, entities)) {
@@ -409,7 +283,11 @@ export function detectPIIWithStats(text, enabledTypes) {
 }
 
 /**
- * Convenience detector returning only resolved entities.
+ * Detect and resolve PII entities in text.
+ *
+ * @param {string} text - Input text to scan.
+ * @param {Set<string>|string[]|undefined} enabledTypes - Optional active entity type filter.
+ * @returns {Array<{ type: string, start: number, end: number, value: string, confidence: number, meta?: object }>}
  */
 export function detectPII(text, enabledTypes) {
   return detectPIIWithStats(text, enabledTypes).entities;
