@@ -58,7 +58,11 @@
       <div class="panel-header">
         <div class="panel-title-group">
           <h2 id="input-heading" class="panel-title">1. Source Input</h2>
-          <span id="input-meta" class="meta-text">0 chars · plain text</span>
+          <div class="format-switch" role="radiogroup" aria-label="Input format">
+            <button type="button" class="format-btn is-active" data-format="text" role="radio" aria-checked="true">Plain Text</button>
+            <button type="button" class="format-btn" data-format="csv" role="radio" aria-checked="false">CSV</button>
+          </div>
+          <span id="input-meta" class="meta-text">0 chars · 0 lines</span>
         </div>
         <div class="panel-actions">
           <button type="button" id="load-sample-text" class="btn btn-secondary">

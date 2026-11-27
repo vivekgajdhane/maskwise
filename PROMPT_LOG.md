@@ -13,3 +13,7 @@ Chronological record of prompts, engineering decisions, and phase outcomes.
 ## Phase 3: Redaction Modes and Consistent Pseudonymization
 - **Intent**: Implement Full Mask (standard and typed `[REDACTED:TYPE]`), type-specific Partial Mask (preserving separators and partial verification context), and Consistent Pseudonymization (`USER_01`, `PHONE_01`, `CARD_01`, `AADHAAR_01`, `PAN_01`, `IP_01`) with input normalization and resettable mapping state in `js/redactors.js`.
 - **Outcome**: Implemented `js/redactors.js` with `normalizeForMapping`, `createPseudonymMapper`, `formatReplacement`, and $O(n)$ `redactText` tracking exact `originalStart`/`sanitizedStart` offsets for diff rendering. Verified formatting and mapping consistency across case and separator variants.
+
+## Phase 4: Input Handling, RFC-4180 CSV, and Formula Guard
+- **Intent**: Implement local-only `.txt`/`.csv` upload with 5 MB cap via `FileReader`, preserve line endings/whitespace in plain text, and build an RFC-4180 CSV parser/serializer (`js/csv.js`) that sanitizes cell-by-cell while preserving headers and defending against spreadsheet formula injection (`=`, `+`, `-`, `@`).
+- **Outcome**: Built `js/csv.js`, wired `js/pipeline.js`, added Plain Text / CSV mode toggle in `index.html` and `css/styles.css`, and implemented drag-and-drop, file extension/size validation, and local `FileReader` loading in `js/ui.js`. Verified CSV round-trips, embedded commas/newlines/quotes, formula neutralization, and exact diff offsets.
