@@ -114,3 +114,7 @@ Chronological log of prompts, design intent, and verified outcomes across all bu
   4. Ensure WCAG accessibility: static fallback for `prefers-reduced-motion`, `aria-label` on `h1`, inactive items `aria-hidden="true"`, auto-pause on hover/focus/tab hide, and an explicit visible pause toggle button (`#headline-rotator-toggle`).
   5. Define `--radius-pill: 9999px` and make CTA buttons fully rounded pills ("Launch App", "Explore Showcase", header button).
 - **Outcome**: Created `js/landing-rotator.js` and updated `index.html`, `css/landing.css`, `css/tokens.css`, `js/landing.js`, and `tests/unit.test.mjs`. Verified zero layout shift across rotation ticks (title width: 724px, slot widths: 183px, 211px, 257px), zero console errors, 0 external network requests, all touch targets >= 44px, and 12/12 passing unit tests.
+
+### Cloud Run Deployment Configuration
+- **Intent**: Configure the project for Google Cloud Run deployment by providing a lightweight `Dockerfile` (using `nginx:alpine` serving static content on port 8080) and `.dockerignore`, enabling 1-command deployment (`gcloud run deploy --source .`) to produce the required `*.run.app` submission URL.
+- **Outcome**: Created `Dockerfile` and `.dockerignore`. Entire image builds from static sources without Node binaries. Verified 12/12 unit tests passing, repo size stays under 1.6 MB on single branch `main`.
