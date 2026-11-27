@@ -86,4 +86,8 @@ Chronological log of prompts, design intent, and verified outcomes across all bu
 
 ### Rename App to Maskwise
 - **Intent**: Rename all branding, titles, meta tags, ARIA labels, `localStorage` theme keys (`maskwise-theme` with commented one-time `cloaktext-theme` fallback), downloaded filenames (`maskwise-sanitized.txt`/`.csv`), and docs to **Maskwise** with zero functional or layout changes.
-- **Outcome**: Updated `index.html`, `analyze/index.html`, `js/landing.js`, `js/ui.js`, `tests/suite.js`, `tests/tests.html`, `README.md`, `SECURITY.md`, and `PROMPT_LOG.md`. Verified `grep -ri "cloak" .` (excluding `.git`) shows only the intentional commented `localStorage` fallback, all tests pass, and both `/` and `/analyze/` render cleanly across `360px`, `768px`, and `1440px`.
+- **Outcome**: Updated `index.html`, `analyze/index.html`, `js/landing.js`, `js/ui.js`, `tests/suite.js`, `tests/tests.html`, `README.md`, `SECURITY.md`, and `PROMPT_LOG.md`. Verified `grep -ri "cloak" .` (excluding `.git`) shows only the intentional commented `localStorage` fallback, all tests pass, and both `/` and `/analyze/` render cleanly across `360px`, `768px`, and `1440px` (`86e239d`).
+
+### High-Resolution Transparent Logo Integration
+- **Intent**: Remove the cream background from the provided Maskwise logo image using color-decontamination alpha matting, preserve original design/colors/proportions at Retina/4K density (`360x237` displayed at `48x32`), and place it in the top-left header of `/`, `/analyze/`, and `/tests/tests.html`.
+- **Outcome**: Generated `assets/maskwise-logo.png` (`11 KB`, `360x237` RGBA), added `.brand-logo` in `css/tokens.css`, integrated into `index.html`, `analyze/index.html`, and `tests/tests.html`, and verified rendering, `0` console/network errors, and `11/11` passing tests.

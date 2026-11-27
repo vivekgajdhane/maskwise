@@ -233,6 +233,13 @@ code {
   color: var(--text-primary);
 }
 
+.brand-logo {
+  display: block;
+  width: auto;
+  height: 32px;
+  flex-shrink: 0;
+}
+
 .brand-title {
   margin: 0;
   font-size: 1.0625rem;
