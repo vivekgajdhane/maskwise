@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none';">
   <title>CloakText — Client-Side PII Sanitizer</title>
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+  <a href="#raw-input" class="skip-link">Skip to source input</a>
+  <div id="status-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
   <header class="topbar">
     <div class="container topbar-inner">
       <div class="brand">
@@ -59,8 +62,8 @@
         <div class="panel-title-group">
           <h2 id="input-heading" class="panel-title">1. Source Input</h2>
           <div class="format-switch" role="radiogroup" aria-label="Input format">
-            <button type="button" class="format-btn is-active" data-format="text" role="radio" aria-checked="true">Plain Text</button>
-            <button type="button" class="format-btn" data-format="csv" role="radio" aria-checked="false">CSV</button>
+            <button type="button" class="format-btn is-active" data-format="text" role="radio" aria-checked="true" tabindex="0">Plain Text</button>
+            <button type="button" class="format-btn" data-format="csv" role="radio" aria-checked="false" tabindex="-1">CSV</button>
           </div>
           <span id="input-meta" class="meta-text">0 chars · 0 lines</span>
         </div>
@@ -117,9 +120,9 @@
         <div class="mode-group">
           <h2 id="controls-heading" class="panel-title">2. Redaction Mode</h2>
           <div class="segmented" role="radiogroup" aria-label="Redaction mode">
-            <button type="button" class="seg-btn is-active" data-mode="full" role="radio" aria-checked="true">Full Mask</button>
-            <button type="button" class="seg-btn" data-mode="partial" role="radio" aria-checked="false">Partial Mask</button>
-            <button type="button" class="seg-btn" data-mode="pseudonym" role="radio" aria-checked="false">Pseudonymize</button>
+            <button type="button" class="seg-btn is-active" data-mode="full" role="radio" aria-checked="true" tabindex="0">Full Mask</button>
+            <button type="button" class="seg-btn" data-mode="partial" role="radio" aria-checked="false" tabindex="-1">Partial Mask</button>
+            <button type="button" class="seg-btn" data-mode="pseudonym" role="radio" aria-checked="false" tabindex="-1">Pseudonymize</button>
           </div>
         </div>
 
@@ -243,8 +246,8 @@
       </div>
 
       <div class="mobile-diff-tabs" role="tablist" aria-label="Diff view panes">
-        <button type="button" class="tab-btn is-active" data-tab="original" role="tab" aria-selected="true" aria-controls="pane-original">Original</button>
-        <button type="button" class="tab-btn" data-tab="sanitized" role="tab" aria-selected="false" aria-controls="pane-sanitized">Sanitized</button>
+        <button type="button" class="tab-btn is-active" data-tab="original" role="tab" aria-selected="true" aria-controls="pane-original" tabindex="0">Original</button>
+        <button type="button" class="tab-btn" data-tab="sanitized" role="tab" aria-selected="false" aria-controls="pane-sanitized" tabindex="-1">Sanitized</button>
       </div>
 
       <div class="diff-grid">

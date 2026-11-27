@@ -71,12 +71,46 @@ function setFileStatus(message, isError = false) {
   statusEl.classList.toggle("is-error", isError);
 }
 
+function announce(message) {
+  const announcer = document.getElementById("status-announcer");
+  if (!announcer) return;
+  announcer.textContent = "";
+  requestAnimationFrame(() => {
+    announcer.textContent = message;
+  });
+}
+
+function wireRovingGroup(buttons, onActivate) {
+  const list = Array.from(buttons);
+  list.forEach((btn, idx) => {
+    btn.addEventListener("keydown", (event) => {
+      let nextIdx = -1;
+      if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+        nextIdx = (idx + 1) % list.length;
+      } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+        nextIdx = (idx - 1 + list.length) % list.length;
+      } else if (event.key === "Home") {
+        nextIdx = 0;
+      } else if (event.key === "End") {
+        nextIdx = list.length - 1;
+      }
+      if (nextIdx !== -1) {
+        event.preventDefault();
+        const target = list[nextIdx];
+        target.focus();
+        onActivate(target);
+      }
+    });
+  });
+}
+
 function syncFormatButtons() {
   const buttons = document.querySelectorAll(".format-btn[data-format]");
   buttons.forEach((btn) => {
     const active = btn.dataset.format === state.format;
     btn.classList.toggle("is-active", active);
     btn.setAttribute("aria-checked", String(active));
+    btn.setAttribute("tabindex", active ? "0" : "-1");
   });
   const downloadLabel = document.getElementById("download-label");
   if (downloadLabel) {
@@ -511,51 +545,64 @@ function bindEvents() {
     }
   });
 
-  modeButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      state.mode = btn.dataset.mode || "full";
-      modeButtons.forEach((b) => {
-        const active = b === btn;
-        b.classList.toggle("is-active", active);
-        b.setAttribute("aria-checked", String(active));
-      });
-      const typedOption = document.getElementById("typed-mask-option");
-      const pseudoActions = document.getElementById("pseudonym-actions");
-      if (typedOption) typedOption.hidden = state.mode !== "full";
-      if (pseudoActions) pseudoActions.hidden = state.mode !== "pseudonym";
-      if (state.mode !== "pseudonym" && mappingPanel) {
-        state.mappingOpen = false;
-        mappingPanel.hidden = true;
-        if (toggleMappingBtn) {
-          toggleMappingBtn.setAttribute("aria-expanded", "false");
-          toggleMappingBtn.textContent = "Show mapping table";
-        }
-      }
-      processInput();
+  const activateMode = (btn) => {
+    state.mode = btn.dataset.mode || "full";
+    modeButtons.forEach((b) => {
+      const active = b === btn;
+      b.classList.toggle("is-active", active);
+      b.setAttribute("aria-checked", String(active));
+      b.setAttribute("tabindex", active ? "0" : "-1");
     });
+    const typedOption = document.getElementById("typed-mask-option");
+    const pseudoActions = document.getElementById("pseudonym-actions");
+    if (typedOption) typedOption.hidden = state.mode !== "full";
+    if (pseudoActions) pseudoActions.hidden = state.mode !== "pseudonym";
+    if (state.mode !== "pseudonym" && mappingPanel) {
+      state.mappingOpen = false;
+      mappingPanel.hidden = true;
+      if (toggleMappingBtn) {
+        toggleMappingBtn.setAttribute("aria-expanded", "false");
+        toggleMappingBtn.textContent = "Show mapping table";
+      }
+    }
+    processInput();
+    announce(`Redaction mode set to ${btn.textContent?.trim() || state.mode}`);
+  };
+
+  modeButtons.forEach((btn) => {
+    btn.addEventListener("click", () => activateMode(btn));
   });
+  wireRovingGroup(modeButtons, activateMode);
+
+  const activateFormat = (btn) => {
+    state.format = btn.dataset.format === "csv" ? "csv" : "text";
+    state.fileExt = state.format === "csv" ? "csv" : "txt";
+    syncFormatButtons();
+    processInput();
+    announce(`Input format set to ${state.format === "csv" ? "CSV" : "Plain Text"}`);
+  };
 
   formatButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      state.format = btn.dataset.format === "csv" ? "csv" : "text";
-      state.fileExt = state.format === "csv" ? "csv" : "txt";
-      syncFormatButtons();
-      processInput();
-    });
+    btn.addEventListener("click", () => activateFormat(btn));
   });
+  wireRovingGroup(formatButtons, activateFormat);
+
+  const activateTab = (btn) => {
+    const target = btn.dataset.tab;
+    tabButtons.forEach((b) => {
+      const active = b === btn;
+      b.classList.toggle("is-active", active);
+      b.setAttribute("aria-selected", String(active));
+      b.setAttribute("tabindex", active ? "0" : "-1");
+    });
+    paneOriginal?.classList.toggle("is-active", target === "original");
+    paneSanitized?.classList.toggle("is-active", target === "sanitized");
+  };
 
   tabButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const target = btn.dataset.tab;
-      tabButtons.forEach((b) => {
-        const active = b === btn;
-        b.classList.toggle("is-active", active);
-        b.setAttribute("aria-selected", String(active));
-      });
-      paneOriginal?.classList.toggle("is-active", target === "original");
-      paneSanitized?.classList.toggle("is-active", target === "sanitized");
-    });
+    btn.addEventListener("click", () => activateTab(btn));
   });
+  wireRovingGroup(tabButtons, activateTab);
 
   detectorCheckboxes.forEach((cb) => {
     cb.addEventListener("change", () => {
@@ -594,6 +641,7 @@ function bindEvents() {
   resetMappingBtn?.addEventListener("click", () => {
     state.mapper.reset();
     processInput();
+    announce("Pseudonym mapping table reset");
   });
 
   sampleTextBtn?.addEventListener("click", () => loadSample("text"));

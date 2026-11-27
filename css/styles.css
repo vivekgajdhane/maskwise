@@ -111,6 +111,30 @@ html[data-theme="dark"] {
 html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: var(--space-2);
+  z-index: 100;
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-fg);
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  left: var(--space-3);
 }
 
 body {
@@ -342,8 +366,8 @@ html[data-theme="dark"] .icon-moon {
 }
 
 .format-btn {
-  min-height: 32px;
-  padding: 0 var(--space-2);
+  min-height: 44px;
+  padding: 0 var(--space-3);
   border: none;
   border-radius: 4px;
   background: transparent;
@@ -488,7 +512,7 @@ html[data-theme="dark"] .icon-moon {
 }
 
 .seg-btn {
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 var(--space-3);
   border: none;
   border-radius: 4px;
@@ -514,7 +538,6 @@ html[data-theme="dark"] .icon-moon {
   align-items: center;
   gap: var(--space-3);
   flex-wrap: wrap;
-  min-height: 44px;
 }
 
 .checkbox-label {
@@ -531,6 +554,11 @@ html[data-theme="dark"] .icon-moon {
   height: 18px;
   accent-color: var(--navy);
   cursor: pointer;
+}
+
+html[data-theme="dark"] .checkbox-label input,
+html[data-theme="dark"] .detector-chip input {
+  accent-color: var(--mist);
 }
 
 .pseudonym-actions {
@@ -876,6 +904,7 @@ html[data-theme="dark"] .redacted-mark {
   font-size: 0.9rem;
   line-height: 1.65;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
   word-break: break-word;
 }
 
@@ -942,6 +971,12 @@ html[data-theme="dark"] .redacted-mark {
   .privacy-badge {
     font-size: 0.6875rem;
     padding: 4px var(--space-2);
+    flex: 1 1 auto;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .panel-actions,
@@ -965,5 +1000,13 @@ html[data-theme="dark"] .redacted-mark {
 
   .diff-body {
     height: 300px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
   }
 }
