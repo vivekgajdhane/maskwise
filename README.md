@@ -1,7 +1,13 @@
 # Maskwise — Smart Redaction That Never Leaves Your Device
 
-**Live Deployment**: [https://maskwise-sooty.vercel.app](https://maskwise-sooty.vercel.app)  
-**Workspace Analyzer**: [https://maskwise-sooty.vercel.app/analyze/](https://maskwise-sooty.vercel.app/analyze/)
+[![Live Demo on Vercel](https://img.shields.io/badge/Live_Demo-maskwise--sooty.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://maskwise-sooty.vercel.app)
+[![Launch Workspace](https://img.shields.io/badge/Launch_App-/analyze/-133E87?style=for-the-badge&logo=googlechrome&logoColor=white)](https://maskwise-sooty.vercel.app/analyze/)
+[![Client-Side Zero-Leak](https://img.shields.io/badge/Privacy-100%25_Client--Side-success?style=for-the-badge)](https://maskwise-sooty.vercel.app)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+
+> 🚀 **Live Web App**: [https://maskwise-sooty.vercel.app](https://maskwise-sooty.vercel.app)  
+> 🧪 **Interactive Workspace**: [https://maskwise-sooty.vercel.app/analyze/](https://maskwise-sooty.vercel.app/analyze/)  
+> 🌐 **Vercel Deployment**: [https://vercel.com/phoenix-78f4/maskwise](https://vercel.com/phoenix-78f4/maskwise)
 
 Maskwise is a dependency-free, 100% browser-based Personally Identifiable Information (PII) sanitizer built for **PromptWars x NIAT_Pune** (Google x NIAT Hackathon). Users can paste raw logs, support tickets, resumes, clinical notes, or upload `.txt`/`.csv` files (up to 5 MB) to detect, validate, highlight, redact, and export sanitized data **entirely inside the browser** without any server communication.
 
