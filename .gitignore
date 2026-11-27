@@ -1,0 +1,17 @@
+# OS & editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Dependencies & build artifacts (none should exist)
+node_modules/
+dist/
+build/
+coverage/
+*.log
+.env
+.env.*

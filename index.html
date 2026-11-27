@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none';">
+  <title>CloakText — Client-Side PII Sanitizer</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <span class="brand-icon" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </span>
+        <div class="brand-text">
+          <h1 class="brand-title">CloakText</h1>
+          <p class="brand-subtitle">Client-Side PII Sanitizer</p>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <div class="privacy-badge" role="status" aria-label="Privacy guarantee: 100% client-side, nothing leaves your browser">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <span>100% client-side, nothing leaves your browser</span>
+        </div>
+
+        <button type="button" id="theme-toggle" class="btn btn-secondary btn-icon" aria-pressed="false" aria-label="Toggle dark mode">
+          <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+          <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <span class="theme-label">Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container workspace">
+    <section class="panel input-panel" aria-labelledby="input-heading">
+      <div class="panel-header">
+        <div class="panel-title-group">
+          <h2 id="input-heading" class="panel-title">1. Source Input</h2>
+          <span id="input-meta" class="meta-text">0 chars · plain text</span>
+        </div>
+        <div class="panel-actions">
+          <button type="button" id="load-sample-text" class="btn btn-secondary">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            Load sample noisy data
+          </button>
+          <button type="button" id="load-sample-csv" class="btn btn-secondary">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <line x1="3" y1="9" x2="21" y2="9"/>
+              <line x1="3" y1="15" x2="21" y2="15"/>
+              <line x1="9" y1="3" x2="9" y2="21"/>
+            </svg>
+            Load sample CSV
+          </button>
+          <button type="button" id="clear-input" class="btn btn-ghost">Clear</button>
+        </div>
+      </div>
+
+      <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Upload a .txt or .csv file up to 5 MB, or drag and drop it here">
+        <input type="file" id="file-input" class="sr-only" accept=".txt,.csv,text/plain,text/csv">
+        <div class="dropzone-content">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <span>Drop a <strong>.txt</strong> or <strong>.csv</strong> file here (max 5 MB), or <span class="link-text">browse local files</span></span>
+        </div>
+        <span id="file-status" class="file-status" role="status" aria-live="polite">No file loaded</span>
+      </div>
+
+      <div class="textarea-wrap">
+        <label for="raw-input" class="sr-only">Raw text or CSV content to sanitize</label>
+        <textarea
+          id="raw-input"
+          class="raw-textarea"
+          rows="8"
+          spellcheck="false"
+          placeholder="Paste raw logs, support tickets, clinical notes, resumes, or CSV data here — or click 'Load sample noisy data' above..."
+        ></textarea>
+      </div>
+    </section>
+
+    <section class="panel controls-panel" aria-labelledby="controls-heading">
+      <div class="controls-top">
+        <div class="mode-group">
+          <h2 id="controls-heading" class="panel-title">2. Redaction Mode</h2>
+          <div class="segmented" role="radiogroup" aria-label="Redaction mode">
+            <button type="button" class="seg-btn is-active" data-mode="full" role="radio" aria-checked="true">Full Mask</button>
+            <button type="button" class="seg-btn" data-mode="partial" role="radio" aria-checked="false">Partial Mask</button>
+            <button type="button" class="seg-btn" data-mode="pseudonym" role="radio" aria-checked="false">Pseudonymize</button>
+          </div>
+        </div>
+
+        <div id="mode-options" class="mode-options">
+          <label id="typed-mask-option" class="checkbox-label">
+            <input type="checkbox" id="typed-mask-toggle">
+            <span>Include type tag (<code>[REDACTED:EMAIL]</code>)</span>
+          </label>
+          <div id="pseudonym-actions" class="pseudonym-actions" hidden>
+            <label class="checkbox-label">
+              <input type="checkbox" id="persist-mapping-toggle">
+              <span>Keep mapping across edits</span>
+            </label>
+            <button type="button" id="toggle-mapping-btn" class="btn btn-secondary" aria-expanded="false" aria-controls="mapping-panel">Show mapping table</button>
+            <button type="button" id="reset-mapping-btn" class="btn btn-secondary">Reset mapping</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="detectors-bar">
+        <div class="detectors-header">
+          <span class="sub-label">Active Detectors &amp; Live Counts</span>
+          <div class="summary-pills">
+            <span id="total-detected-badge" class="stat-pill">0 entities detected</span>
+            <span id="rejected-summary-badge" class="stat-pill stat-pill-muted">0 invalid candidates ignored</span>
+          </div>
+        </div>
+
+        <div id="detector-toggles" class="detector-grid" role="group" aria-label="PII detector toggles">
+          <label class="detector-chip" data-type="email">
+            <input type="checkbox" data-detector="email" checked>
+            <span class="chip-name">Email</span>
+            <span class="chip-count" data-count="email">0</span>
+          </label>
+          <label class="detector-chip" data-type="phone">
+            <input type="checkbox" data-detector="phone" checked>
+            <span class="chip-name">Phone</span>
+            <span class="chip-count" data-count="phone">0</span>
+          </label>
+          <label class="detector-chip" data-type="ip">
+            <input type="checkbox" data-detector="ip" checked>
+            <span class="chip-name">IP Address</span>
+            <span class="chip-count" data-count="ip">0</span>
+          </label>
+          <label class="detector-chip" data-type="pan">
+            <input type="checkbox" data-detector="pan" checked>
+            <span class="chip-name">Indian PAN</span>
+            <span class="chip-count" data-count="pan">0</span>
+          </label>
+          <label class="detector-chip" data-type="aadhaar">
+            <input type="checkbox" data-detector="aadhaar" checked>
+            <span class="chip-name">Aadhaar</span>
+            <span class="chip-count" data-count="aadhaar">0</span>
+          </label>
+          <label class="detector-chip" data-type="credit_card">
+            <input type="checkbox" data-detector="credit_card" checked>
+            <span class="chip-name">Credit Card</span>
+            <span class="chip-count" data-count="credit_card">0</span>
+          </label>
+        </div>
+      </div>
+
+      <div id="mapping-panel" class="mapping-panel" hidden>
+        <div class="mapping-header">
+          <h3 class="sub-label">Pseudonym Mapping Table</h3>
+          <span id="mapping-count" class="meta-text">0 unique entities mapped</span>
+        </div>
+        <div class="table-scroll">
+          <table class="mapping-table">
+            <thead>
+              <tr>
+                <th scope="col">Placeholder</th>
+                <th scope="col">Type</th>
+                <th scope="col">Normalized Value</th>
+                <th scope="col">Occurrences</th>
+              </tr>
+            </thead>
+            <tbody id="mapping-tbody">
+              <tr>
+                <td colspan="4" class="empty-cell">No pseudonyms generated yet. Switch to Pseudonymize mode with PII input.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel diff-panel" aria-labelledby="diff-heading">
+      <div class="panel-header diff-header">
+        <div class="panel-title-group">
+          <h2 id="diff-heading" class="panel-title">3. Audit &amp; Side-by-Side Diff</h2>
+          <span id="perf-badge" class="meta-text">Ready</span>
+        </div>
+
+        <div class="export-actions">
+          <button type="button" id="copy-output" class="btn btn-secondary" disabled>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            <span id="copy-label">Copy sanitized</span>
+          </button>
+          <button type="button" id="download-output" class="btn btn-primary" disabled>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            <span id="download-label">Download sanitized .txt</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="legend" aria-label="Entity highlight legend">
+        <span class="legend-item"><mark class="pii-mark pii-credit_card" data-tag="CARD">Credit Card</mark></span>
+        <span class="legend-item"><mark class="pii-mark pii-aadhaar" data-tag="AADHAAR">Aadhaar</mark></span>
+        <span class="legend-item"><mark class="pii-mark pii-pan" data-tag="PAN">PAN</mark></span>
+        <span class="legend-item"><mark class="pii-mark pii-phone" data-tag="PHONE">Phone</mark></span>
+        <span class="legend-item"><mark class="pii-mark pii-ip" data-tag="IP">IP</mark></span>
+        <span class="legend-item"><mark class="pii-mark pii-email" data-tag="EMAIL">Email</mark></span>
+      </div>
+
+      <div class="mobile-diff-tabs" role="tablist" aria-label="Diff view panes">
+        <button type="button" class="tab-btn is-active" data-tab="original" role="tab" aria-selected="true" aria-controls="pane-original">Original</button>
+        <button type="button" class="tab-btn" data-tab="sanitized" role="tab" aria-selected="false" aria-controls="pane-sanitized">Sanitized</button>
+      </div>
+
+      <div class="diff-grid">
+        <div id="pane-original" class="diff-pane is-active" role="region" aria-label="Original input with highlighted PII">
+          <div class="diff-pane-head">
+            <span class="diff-pane-title">Original (Detected PII)</span>
+            <span id="original-line-count" class="meta-text">0 lines</span>
+          </div>
+          <pre id="original-diff" class="diff-body" tabindex="0"><span class="empty-state">Paste text, upload a .txt/.csv file, or load sample noisy data to inspect detected PII.</span></pre>
+        </div>
+
+        <div id="pane-sanitized" class="diff-pane" role="region" aria-label="Sanitized output">
+          <div class="diff-pane-head">
+            <span class="diff-pane-title">Sanitized Output</span>
+            <span id="sanitized-line-count" class="meta-text">0 lines</span>
+          </div>
+          <pre id="sanitized-diff" class="diff-body" tabindex="0"><span class="empty-state">Sanitized output will appear here in real time.</span></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>Enforced via CSP (<code>connect-src 'none'</code>) · Zero external requests · Plain vanilla ES modules</span>
+      <a href="tests/tests.html" class="footer-link">Open browser test suite</a>
+    </div>
+  </footer>
+
+  <script type="module" src="js/ui.js"></script>
+</body>
+</html>
