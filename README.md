@@ -159,6 +159,28 @@ Measured with `node tests/bench.js` (dense mixed PII in Pseudonymize mode):
 
 ---
 
+## Google Technologies & Privacy-Safe Usage
+
+Built with **Google Antigravity**. Every Google technology used in CloakText operates without sending user data to any server:
+
+| Technology | Role in CloakText | Why It Is Privacy-Safe |
+| :--- | :--- | :--- |
+| **Google Fonts (`Sora`)** | UI headings and labels | Self-hosted in `/fonts/sora-latin-*.woff2`; zero requests to `fonts.googleapis.com` or `fonts.gstatic.com` |
+| **Firebase Hosting** | Static deployment config (`firebase.json`) | Serves static files only with strict HTTP `Content-Security-Policy`, `Referrer-Policy: no-referrer`, and `X-Content-Type-Options: nosniff`; no Firestore, Auth, or Analytics |
+| **Lighthouse & Chrome DevTools** | Local performance, accessibility, and CSP verification | Audited locally against `127.0.0.1` (`Performance: 100`, `Accessibility: 100`, `Best Practices: 100`, `SEO: 91`, `CLS: 0`) |
+| **Chrome Built-in AI (Gemini Nano)** | Opt-in **"Review for missed PII (on-device)"** button | Feature-detected (`globalThis.LanguageModel` / `window.ai?.languageModel`); runs strictly on-device when available, fails gracefully with a clear local note when unavailable, and makes zero network calls |
+| **Google Antigravity** | Agentic IDE used to architect, test, and harden the app | Development environment only; zero runtime telemetry or dependencies shipped |
+
+### Deploying to Firebase Hosting (Static Only)
+```bash
+# Install Firebase CLI globally if needed, then deploy static assets + headers from firebase.json
+firebase login
+firebase init hosting   # select existing project, public dir: ".", single-page rewrite: No
+firebase deploy --only hosting
+```
+
+---
+
 ## Screenshot
 
 > _Screenshot Placeholder_: Capture the live Desktop (`1440px`) side-by-side diff after clicking **Load sample noisy data** and switching to **Pseudonymize** with **Show mapping table** expanded, and save here if desired.

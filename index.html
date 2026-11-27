@@ -3,10 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CloakText is a 100% client-side PII sanitizer for emails, phone numbers, IP addresses, Indian PAN, Aadhaar, and credit cards.">
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: blob:; worker-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none';">
   <title>CloakText — Client-Side PII Sanitizer</title>
   <link rel="icon" href="data:,">
+  <link rel="preload" as="font" type="font/woff2" href="fonts/sora-latin-400-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="fonts/sora-latin-500-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="fonts/sora-latin-600-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="fonts/sora-latin-700-normal.woff2" crossorigin>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -92,6 +97,7 @@
       </div>
 
       <div id="dropzone" class="dropzone">
+        <label for="file-input" class="sr-only">Upload a .txt or .csv file</label>
         <input type="file" id="file-input" class="sr-only" accept=".txt,.csv,text/plain,text/csv">
         <div class="dropzone-content">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -220,6 +226,12 @@
         </div>
 
         <div class="export-actions">
+          <button type="button" id="ai-review-btn" class="btn btn-secondary" disabled>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/>
+            </svg>
+            <span>Review for missed PII (on-device)</span>
+          </button>
           <button type="button" id="copy-output" class="btn btn-secondary" disabled>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
@@ -246,6 +258,8 @@
         <span class="legend-item"><mark class="pii-mark pii-ip" data-tag="IP">IP</mark></span>
         <span class="legend-item"><mark class="pii-mark pii-email" data-tag="EMAIL">Email</mark></span>
       </div>
+
+      <div id="ai-review-note" class="ai-review-note" role="status" aria-live="polite" hidden></div>
 
       <div class="mobile-diff-tabs" role="tablist" aria-label="Diff view panes">
         <button type="button" class="tab-btn is-active" data-tab="original" role="tab" aria-selected="true" aria-controls="pane-original" tabindex="0">Original</button>

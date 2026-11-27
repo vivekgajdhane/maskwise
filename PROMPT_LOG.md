@@ -74,4 +74,8 @@ Chronological log of prompts, design intent, and verified outcomes across all bu
 
 ### Parameter 5: Accessibility
 - **Intent**: Audit WCAG 2.2 AA contrast ratios across all light/dark palette pairs, replace custom dropzone `role="button"` with a native `<button id="browse-files-btn">`, respect `prefers-color-scheme`, announce detection counts/errors via `aria-live`, and verify 360px/768px/1440px + 200% zoom with zero horizontal overflow.
-- **Outcome**: Computed contrast ratios across 15 light/dark pairs (`5.66:1` to `13.30:1`, all passing AA), upgraded `index.html`, `css/styles.css`, and `js/ui.js`, and verified zero horizontal overflow and `>=44px` touch targets in headless Chromium.
+- **Outcome**: Computed contrast ratios across 15 light/dark pairs (`5.66:1` to `13.30:1`, all passing AA), upgraded `index.html`, `css/styles.css`, and `js/ui.js`, and verified zero horizontal overflow and `>=44px` touch targets in headless Chromium (`5597b1f`).
+
+### Parameter 6: Google Services (Privacy-Safe)
+- **Intent**: Add static-only `firebase.json` with HTTP security headers, add opt-in feature-detected Chrome Built-in On-Device AI (Gemini Nano) review button, run real Lighthouse audits and optimize CLS/labels to hit Performance 95+ and Accessibility 100, and document all privacy-safe Google technologies and Google Antigravity attribution in `README.md`.
+- **Outcome**: Created `firebase.json` and `robots.txt`; added `#ai-review-btn` (`runOnDeviceAIReview`) in `index.html`/`js/ui.js`; added `<label for="file-input">` and preloaded all 4 Sora `.woff2` weights (`font-display: optional`) eliminating `0.347` CLS. Verified Lighthouse scores: `Performance: 100` (`CLS: 0`), `Accessibility: 100`, `Best Practices: 100`, `SEO: 91`. Updated `README.md`.

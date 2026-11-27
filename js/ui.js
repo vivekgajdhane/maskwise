@@ -327,8 +327,10 @@ function applySanitizationResult(result) {
   const hasOutput = result.sanitizedText.length > 0;
   const copyBtn = document.getElementById("copy-output");
   const downloadBtn = document.getElementById("download-output");
+  const aiReviewBtn = document.getElementById("ai-review-btn");
   if (copyBtn) copyBtn.disabled = !hasOutput;
   if (downloadBtn) downloadBtn.disabled = !hasOutput;
+  if (aiReviewBtn) aiReviewBtn.disabled = !hasOutput;
 
   if (state.announceCountsOnNextResult) {
     state.announceCountsOnNextResult = false;
@@ -533,6 +535,11 @@ function wipeSensitiveState() {
   state.mapper.reset();
   document.getElementById("original-diff")?.replaceChildren();
   document.getElementById("sanitized-diff")?.replaceChildren();
+  const aiNote = document.getElementById("ai-review-note");
+  if (aiNote) {
+    aiNote.textContent = "";
+    aiNote.hidden = true;
+  }
 }
 
 function loadSample(kind) {
@@ -699,6 +706,44 @@ function bindInputAndExportEvents() {
   sanitizedDiff?.addEventListener("scroll", () => syncPaneScroll(sanitizedDiff, originalDiff));
   document.getElementById("copy-output")?.addEventListener("click", copySanitized);
   document.getElementById("download-output")?.addEventListener("click", downloadSanitized);
+  document.getElementById("ai-review-btn")?.addEventListener("click", runOnDeviceAIReview);
+}
+
+async function runOnDeviceAIReview() {
+  const noteEl = document.getElementById("ai-review-note");
+  const sanitizedText = state.lastResult?.sanitizedText;
+  if (!noteEl || !sanitizedText) return;
+
+  noteEl.hidden = false;
+  const promptApi = globalThis.LanguageModel || window.ai?.languageModel;
+  if (!promptApi) {
+    noteEl.textContent =
+      "On-device Gemini Nano is unavailable in this browser. Deterministic local regex + checksum redaction remains 100% active with zero network calls.";
+    announce("On-device AI is unavailable in this browser.");
+    return;
+  }
+
+  try {
+    const availability = promptApi.availability
+      ? await promptApi.availability()
+      : (await promptApi.capabilities?.())?.available;
+    if (availability === "no" || availability === "unavailable") {
+      noteEl.textContent =
+        "On-device Gemini Nano model is not downloaded on this device. No external request was made.";
+      return;
+    }
+    noteEl.textContent = "Running local on-device Gemini Nano review...";
+    const session = await promptApi.create({
+      systemPrompt:
+        "You review already-redacted text locally. Briefly list any remaining unstructured PII hints (person names, street addresses) or say 'No obvious missed PII found.'",
+    });
+    const reply = await session.prompt(sanitizedText.slice(0, 4000));
+    session.destroy?.();
+    noteEl.textContent = `On-device AI review: ${String(reply || "").trim()}`;
+    announce("On-device AI review completed.");
+  } catch (err) {
+    noteEl.textContent = `On-device AI review skipped (${err?.message || "unavailable"}). Zero network calls were made.`;
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
