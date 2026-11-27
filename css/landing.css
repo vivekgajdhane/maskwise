@@ -46,6 +46,12 @@
   gap: var(--space-1);
 }
 
+.topbar-actions .btn-primary {
+  border-radius: var(--radius-pill);
+  padding: 0 var(--space-5);
+  min-height: 44px;
+}
+
 .nav-link {
   padding: var(--space-2) var(--space-3);
   font-family: var(--font-ui);
@@ -105,49 +111,142 @@
    2. Dynamic Inline-Visual Hero Section
    ------------------------------------------------------------- */
 .hero-section {
-  padding-top: var(--space-12);
+  padding-top: var(--space-10);
   padding-bottom: var(--space-12);
 }
 
 .hero-header-wrap {
   text-align: center;
-  max-width: 900px;
+  max-width: 920px;
   margin: 0 auto var(--space-10);
 }
 
-.hero-kicker-pill {
+.hero-title {
+  margin: 0 0 var(--space-4);
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+}
+
+/* Rotator Slot: Stacks all 3 variants into a single CSS grid cell to fix width to max child */
+.rotator-slot {
+  display: inline-grid;
+  grid-template-areas: "stack";
+  vertical-align: middle;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  line-height: 1.4;
+}
+
+.rotator-item {
+  grid-area: stack;
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: 4px 14px;
-  border-radius: 9999px;
+  justify-content: center;
+  gap: 6px;
+  padding: 2px 14px;
+  border-radius: var(--radius-pill);
   background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
-  font-family: var(--font-ui);
-  font-size: 0.75rem;
+  font-size: 0.75em;
   font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+  line-height: 1.4;
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+
+  /* Stacked transitions: transform and opacity only (no layout shift) */
+  opacity: 0;
+  transform: translateY(14px);
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 350ms cubic-bezier(0.16, 1, 0.3, 1), transform 350ms cubic-bezier(0.16, 1, 0.3, 1), visibility 350ms;
+  will-change: transform, opacity;
+}
+
+.rotator-item[data-active="true"] {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  visibility: visible;
+  z-index: 2;
+}
+
+.rotator-item[data-exiting="true"] {
+  opacity: 0;
+  transform: translateY(-14px);
+  pointer-events: none;
+  visibility: hidden;
+  z-index: 1;
+}
+
+/* Rotator Controls: Accessible pause toggle */
+.rotator-controls {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-2);
   margin-bottom: var(--space-5);
 }
 
-.pulse-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: var(--color-success, #2e7d32);
-  display: inline-block;
-  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
+.rotator-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  border-radius: var(--radius-pill);
+  background-color: transparent;
+  border: 1px solid var(--border-subtle);
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  min-height: 44px;
+  transition: background-color var(--transition), border-color var(--transition), color var(--transition);
 }
 
-.hero-title {
-  margin: 0 0 var(--space-5);
-  font-size: clamp(2rem, 4vw, 3.25rem);
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.025em;
+.rotator-toggle-btn .icon-play {
+  display: none;
+}
+
+.rotator-toggle-btn[aria-pressed="true"] .icon-pause {
+  display: none;
+}
+
+.rotator-toggle-btn[aria-pressed="true"] .icon-play {
+  display: inline-block;
+}
+
+.rotator-toggle-btn:hover {
+  background-color: var(--bg-surface);
   color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.rotator-toggle-btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .rotator-item {
+    transition: none !important;
+  }
+  .rotator-item:not([data-variant="0"]) {
+    display: none !important;
+  }
+  .rotator-item[data-variant="0"] {
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+  }
+  .rotator-controls {
+    display: none !important;
+  }
 }
 
 /* Mobbin-style inline rounded badge pills woven directly into headline typography */
@@ -155,8 +254,8 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 2px 12px;
-  border-radius: 9999px;
+  padding: 2px 14px;
+  border-radius: var(--radius-pill);
   background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
   font-size: 0.75em;
@@ -166,7 +265,6 @@
   color: var(--text-primary);
   box-shadow: var(--shadow-sm);
   white-space: nowrap;
-  transition: transform var(--transition);
 }
 
 .inline-pill:hover {
@@ -206,6 +304,10 @@
   gap: var(--space-4);
   flex-wrap: wrap;
   margin-bottom: var(--space-8);
+}
+
+.hero-actions .btn {
+  border-radius: var(--radius-pill);
 }
 
 .btn-lg {
@@ -1180,6 +1282,10 @@
   justify-content: center;
   gap: var(--space-4);
   flex-wrap: wrap;
+}
+
+.closing-actions .btn {
+  border-radius: var(--radius-pill);
 }
 
 /* -------------------------------------------------------------

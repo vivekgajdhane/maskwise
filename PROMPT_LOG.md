@@ -105,3 +105,12 @@ Chronological log of prompts, design intent, and verified outcomes across all bu
   5. Interactive AI agent integration showcase with prompt simulation bar, animated 4-step status pipeline, and categorized horizontal token chips.
   6. Editorial 3-column case studies, executive pull-quote block with monogram avatar, specialized air-gap feature banner, centered closing CTA, and structured 4-column footer.
 - **Outcome**: Updated `index.html`, `css/landing.css`, and `js/landing.js`. Verified via Chrome CDP across 1440px, 768px, and 360px viewports (0 horizontal overflow, >=44px touch targets, 0 network requests, 0 console errors) and automated unit test suite passing (`11/11`).
+
+### Landing: Rotating Headline, Pill Buttons, Remove Badge
+- **Intent**:
+  1. Remove the "ZERO-NETWORK CLIENT-SIDE SANITIZATION" kicker badge above the headline and rebalance hero top spacing.
+  2. Implement an accessible 3-slot rotating headline: "Where [SLOT 1] and [SLOT 2] sanitize data [SLOT 3]" with exactly 3 variants per slot (teams -> developers -> analysts; AI agents -> support bots -> LLM pipelines; with zero leaks -> with zero uploads -> with zero risk), staggered by 150ms on a 2000ms loop.
+  3. Prevent layout shift completely by stacking all variants in one CSS grid cell (`grid-area: stack`), allowing the slot to size to the widest variant.
+  4. Ensure WCAG accessibility: static fallback for `prefers-reduced-motion`, `aria-label` on `h1`, inactive items `aria-hidden="true"`, auto-pause on hover/focus/tab hide, and an explicit visible pause toggle button (`#headline-rotator-toggle`).
+  5. Define `--radius-pill: 9999px` and make CTA buttons fully rounded pills ("Launch App", "Explore Showcase", header button).
+- **Outcome**: Created `js/landing-rotator.js` and updated `index.html`, `css/landing.css`, `css/tokens.css`, `js/landing.js`, and `tests/unit.test.mjs`. Verified zero layout shift across rotation ticks (title width: 724px, slot widths: 183px, 211px, 257px), zero console errors, 0 external network requests, all touch targets >= 44px, and 12/12 passing unit tests.

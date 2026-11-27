@@ -8,6 +8,7 @@ import fs from "node:fs";
 import test from "node:test";
 import { parseCSV, serializeCSV } from "../js/csv.js";
 import { detectPII, detectPIIWithStats } from "../js/detectors.js";
+import { createRotatorState } from "../js/landing-rotator.js";
 import { runSanitization } from "../js/pipeline.js";
 import { createPseudonymMapper, formatReplacement, redactText } from "../js/redactors.js";
 import { SAMPLE_NOISY_CSV, SAMPLE_NOISY_TEXT } from "../js/samples.js";
@@ -166,4 +167,57 @@ test("Smoke: landing page and /analyze/ routes exist with proper script isolatio
 
   assert.match(analyzerHtml, /src="\.\.\/js\/ui\.js"/);
   assert.match(analyzerHtml, /href="\.\.\/"/);
+});
+
+test("Unit: Headline rotator state machine (cycle, pause, resume, slot variants)", () => {
+  const rotator = createRotatorState({ variantCount: 3, interval: 2000, stagger: 150 });
+  assert.equal(rotator.currentIndex, 0);
+  assert.equal(rotator.loopInterval, 2000);
+  assert.equal(rotator.staggerDelay, 150);
+  assert.equal(rotator.variantCount, 3);
+
+  // Normal progression: 0 -> 1 -> 2 -> 0
+  assert.equal(rotator.tick(), 1);
+  assert.equal(rotator.tick(), 2);
+  assert.equal(rotator.tick(), 0);
+  assert.equal(rotator.tick(), 1);
+
+  // Pause stops progression
+  rotator.pause();
+  assert.equal(rotator.isPaused, true);
+  assert.equal(rotator.tick(), 1);
+  assert.equal(rotator.tick(), 1);
+
+  // Resume continues progression
+  rotator.resume();
+  assert.equal(rotator.isPaused, false);
+  assert.equal(rotator.tick(), 2);
+  assert.equal(rotator.tick(), 0);
+
+  // Toggle pause
+  rotator.togglePause();
+  assert.equal(rotator.isPaused, true);
+  assert.equal(rotator.tick(), 0);
+  rotator.togglePause();
+  assert.equal(rotator.isPaused, false);
+  assert.equal(rotator.tick(), 1);
+
+  // Verification on index.html: badge removed & 3 variants per slot
+  const html = fs.readFileSync("index.html", "utf8");
+  assert.equal(/ZERO-NETWORK/i.test(html), false, "Badge text ZERO-NETWORK must be deleted");
+
+  assert.equal((html.match(/data-slot="1"/g) || []).length, 1);
+  assert.equal((html.match(/data-slot="2"/g) || []).length, 1);
+  assert.equal((html.match(/data-slot="3"/g) || []).length, 1);
+
+  // Exactly 3 variants per slot
+  const countVariants = (slotNum) => {
+    const slotRegex = new RegExp(`data-slot="${slotNum}"[\\s\\S]*?(?=data-slot="|sanitize data|<\\/h1>)`);
+    const match = html.match(slotRegex);
+    const variants = (match?.[0] || "").match(/data-variant="/g) || [];
+    return variants.length;
+  };
+  assert.equal(countVariants(1), 3, "Slot 1 must have exactly 3 variants");
+  assert.equal(countVariants(2), 3, "Slot 2 must have exactly 3 variants");
+  assert.equal(countVariants(3), 3, "Slot 3 must have exactly 3 variants");
 });

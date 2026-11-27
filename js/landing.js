@@ -5,6 +5,8 @@
  * Intentionally isolates detection/redaction modules to keep "/" lightweight and instantaneous.
  */
 
+import { initHeadlineRotator } from "./landing-rotator.js";
+
 const THEME_STORAGE_KEY = "maskwise-theme"; // Theme preference only; never stores user text or PII
 const LEGACY_THEME_KEY = "cloaktext-theme"; // Intentional one-time fallback for users switching from old key
 
@@ -222,6 +224,7 @@ export function initLandingPage() {
   initMobileNav();
   initWorkflowTabs();
   initAgentPreview();
+  initHeadlineRotator();
 }
 
 if (document.readyState === "loading") {

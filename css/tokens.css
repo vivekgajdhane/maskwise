@@ -81,6 +81,7 @@
   /* Radii & transitions */
   --radius-sm: 6px;
   --radius-md: 8px;
+  --radius-pill: 9999px;
   --transition: 200ms ease;
 }
 
