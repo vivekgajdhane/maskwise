@@ -13,11 +13,8 @@
   border-bottom: none;
 }
 
-.hero-grid {
-  display: grid;
-  grid-template-columns: 1.05fr 1fr;
-  gap: var(--space-10);
-  align-items: center;
+.hero-content {
+  max-width: 720px;
 }
 
 .hero-kicker {
@@ -59,41 +56,6 @@
   font-size: 0.875rem;
 }
 
-/* Static Before / After Sample Card */
-.sample-card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
-  box-shadow: var(--shadow-sm);
-  display: grid;
-  gap: var(--space-3);
-}
-
-.sample-pane {
-  background-color: var(--bg-input);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: var(--space-3);
-}
-
-.sample-pane-label {
-  display: block;
-  margin-bottom: var(--space-2);
-  font-family: var(--font-ui);
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-muted);
-}
-
-.sample-code {
-  margin: 0;
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  line-height: 1.75;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
 
 /* Section Headings */
 .section-head {
@@ -186,7 +148,6 @@
 }
 
 @media (max-width: 900px) {
-  .hero-grid,
   .three-col,
   .two-col {
     grid-template-columns: 1fr;
