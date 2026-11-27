@@ -425,11 +425,9 @@ html[data-theme="dark"] .icon-moon {
   border: 1px dashed var(--border-color);
   border-radius: var(--radius-sm);
   background-color: var(--bg-surface-alt);
-  cursor: pointer;
   transition: background-color var(--transition), border-color var(--transition);
 }
 
-.dropzone:hover,
 .dropzone.is-dragover {
   background-color: var(--bg-hover);
   border-style: solid;
@@ -439,6 +437,7 @@ html[data-theme="dark"] .icon-moon {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  flex-wrap: wrap;
   font-size: 0.875rem;
 }
 
@@ -481,7 +480,7 @@ html[data-theme="dark"] .icon-moon {
 
 .raw-textarea::placeholder {
   color: var(--text-muted);
-  opacity: 0.8;
+  opacity: 1;
 }
 
 /* Controls & Segmented Mode Selector */

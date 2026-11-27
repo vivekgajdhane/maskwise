@@ -34,6 +34,8 @@ const state = {
   worker: null,
   requestSeq: 0,
   renderSeq: 0,
+  themeOverridden: false,
+  announceCountsOnNextResult: false,
 };
 
 function getFileExtension(name) {
@@ -327,6 +329,11 @@ function applySanitizationResult(result) {
   const downloadBtn = document.getElementById("download-output");
   if (copyBtn) copyBtn.disabled = !hasOutput;
   if (downloadBtn) downloadBtn.disabled = !hasOutput;
+
+  if (state.announceCountsOnNextResult) {
+    state.announceCountsOnNextResult = false;
+    announce(`${result.entities.length} PII entities detected. ${formatRejectedSummary(result.rejected)}.`);
+  }
 }
 
 function getOrCreateWorker() {
@@ -506,9 +513,13 @@ function handleSelectedFile(file) {
     if (!state.persistMapping) state.mapper.reset();
     syncFormatButtons();
     setFileStatus(`Loaded "${file.name}" (${formatBytes(file.size)}) locally`);
+    state.announceCountsOnNextResult = true;
     processInput();
   };
-  reader.onerror = () => setFileStatus(`Failed to read "${file.name}" locally.`, true);
+  reader.onerror = () => {
+    setFileStatus(`Failed to read "${file.name}" locally.`, true);
+    announce(`Failed to read ${file.name}`);
+  };
   reader.readAsArrayBuffer(file);
 }
 
@@ -537,17 +548,30 @@ function loadSample(kind) {
   );
   if (!state.persistMapping) state.mapper.reset();
   syncFormatButtons();
+  state.announceCountsOnNextResult = true;
   processInput();
 }
 
-function bindModeAndThemeEvents() {
+function applyTheme(theme) {
+  state.theme = theme;
+  document.documentElement.setAttribute("data-theme", theme);
   const themeBtn = document.getElementById("theme-toggle");
   const themeLabel = themeBtn?.querySelector(".theme-label");
-  themeBtn?.addEventListener("click", () => {
-    state.theme = state.theme === "light" ? "dark" : "light";
-    document.documentElement.setAttribute("data-theme", state.theme);
-    themeBtn.setAttribute("aria-pressed", String(state.theme === "dark"));
-    if (themeLabel) themeLabel.textContent = state.theme === "light" ? "Dark" : "Light";
+  themeBtn?.setAttribute("aria-pressed", String(theme === "dark"));
+  if (themeLabel) themeLabel.textContent = theme === "light" ? "Dark" : "Light";
+}
+
+function bindModeAndThemeEvents() {
+  const mediaQuery = window.matchMedia?.("(prefers-color-scheme: dark)");
+  applyTheme(mediaQuery?.matches ? "dark" : "light");
+  mediaQuery?.addEventListener("change", (event) => {
+    if (!state.themeOverridden) applyTheme(event.matches ? "dark" : "light");
+  });
+
+  document.getElementById("theme-toggle")?.addEventListener("click", () => {
+    state.themeOverridden = true;
+    applyTheme(state.theme === "light" ? "dark" : "light");
+    announce(`Switched to ${state.theme} theme`);
   });
 
   const modeButtons = document.querySelectorAll(".seg-btn[data-mode]");
@@ -641,13 +665,7 @@ function bindInputAndExportEvents() {
   window.addEventListener("pagehide", wipeSensitiveState);
   window.addEventListener("beforeunload", wipeSensitiveState);
 
-  dropzone?.addEventListener("click", () => fileInput?.click());
-  dropzone?.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      fileInput?.click();
-    }
-  });
+  document.getElementById("browse-files-btn")?.addEventListener("click", () => fileInput?.click());
   dropzone?.addEventListener("dragover", (e) => {
     e.preventDefault();
     dropzone.classList.add("is-dragover");

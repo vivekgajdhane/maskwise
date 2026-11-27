@@ -70,4 +70,8 @@ Chronological log of prompts, design intent, and verified outcomes across all bu
 
 ### Parameter 4: Testing
 - **Intent**: Add zero-dependency `node --test` suite (`tests/unit.test.mjs`), expand browser test runner (`tests/suite.js` / `tests/tests.html`) with XSS inertness and 50k ReDoS assertions, and document test commands in `README.md`.
-- **Outcome**: Created `tests/unit.test.mjs`, updated `tests/suite.js` and `README.md`. Verified `node --test` (`10/10` passing), `node tests/tests.mjs` (`11/11` passing), and `tests/tests.html` in headless Chromium (`11/11` passing).
+- **Outcome**: Created `tests/unit.test.mjs`, updated `tests/suite.js` and `README.md`. Verified `node --test` (`10/10` passing), `node tests/tests.mjs` (`11/11` passing), and `tests/tests.html` in headless Chromium (`11/11` passing) (`2e1f626`).
+
+### Parameter 5: Accessibility
+- **Intent**: Audit WCAG 2.2 AA contrast ratios across all light/dark palette pairs, replace custom dropzone `role="button"` with a native `<button id="browse-files-btn">`, respect `prefers-color-scheme`, announce detection counts/errors via `aria-live`, and verify 360px/768px/1440px + 200% zoom with zero horizontal overflow.
+- **Outcome**: Computed contrast ratios across 15 light/dark pairs (`5.66:1` to `13.30:1`, all passing AA), upgraded `index.html`, `css/styles.css`, and `js/ui.js`, and verified zero horizontal overflow and `>=44px` touch targets in headless Chromium.
