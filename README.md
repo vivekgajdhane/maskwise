@@ -152,7 +152,7 @@ open http://127.0.0.1:8000/analyze/
   ```bash
   node tests/bench.js
   ```
-- **Browser Test Suite**: Visit `http://127.0.0.1:8000/tests/tests.html` (or click **Open browser test suite** in the app footer).
+- **Browser Test Suite**: Visit `https://maskwise-sooty.vercel.app/tests/tests` (or click **Open browser test suite** in the app footer).
 
 ---
 
