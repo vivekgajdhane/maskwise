@@ -6,6 +6,7 @@
 
 import {
   ALLOWED_EXTENSIONS,
+  ALLOWED_MIME_TYPES,
   APP_CONFIG,
   ENTITY_TYPES,
   FULL_MASK_LABELS,
@@ -353,11 +354,20 @@ async function copySanitized() {
   }
 }
 
+function isAllowedFileType(file, ext) {
+  if (!ALLOWED_EXTENSIONS.has(ext)) return false;
+  const mime = (file.type || "").split(";")[0].trim().toLowerCase();
+  return mime === "" || ALLOWED_MIME_TYPES.has(mime);
+}
+
 function handleSelectedFile(file) {
   if (!file) return;
   const ext = getFileExtension(file.name);
-  if (!ALLOWED_EXTENSIONS.has(ext)) {
-    setFileStatus(`Unsupported file "${file.name}". Only .txt and .csv files are accepted.`, true);
+  if (!isAllowedFileType(file, ext)) {
+    setFileStatus(
+      `Unsupported file "${file.name}" (${file.type || "unknown MIME"}). Only .txt and .csv files are accepted.`,
+      true
+    );
     return;
   }
   if (file.size > APP_CONFIG.MAX_FILE_BYTES) {
@@ -367,8 +377,15 @@ function handleSelectedFile(file) {
   const reader = new FileReader();
   reader.onload = () => {
     const rawInput = document.getElementById("raw-input");
-    if (!rawInput) return;
-    rawInput.value = typeof reader.result === "string" ? reader.result : "";
+    if (!rawInput || !(reader.result instanceof ArrayBuffer)) return;
+    try {
+      const decoder = new TextDecoder("utf-8", { fatal: true });
+      rawInput.value = decoder.decode(reader.result);
+    } catch {
+      setFileStatus(`Encoding error: "${file.name}" is not valid UTF-8 text.`, true);
+      announce("File rejected due to invalid UTF-8 encoding.");
+      return;
+    }
     state.fileName = file.name;
     state.fileExt = ext;
     state.format = ext === "csv" ? "csv" : "text";
@@ -378,7 +395,19 @@ function handleSelectedFile(file) {
     processInput();
   };
   reader.onerror = () => setFileStatus(`Failed to read "${file.name}" locally.`, true);
-  reader.readAsText(file, "UTF-8");
+  reader.readAsArrayBuffer(file);
+}
+
+function wipeSensitiveState() {
+  const rawInput = document.getElementById("raw-input");
+  const fileInput = document.getElementById("file-input");
+  if (rawInput) rawInput.value = "";
+  if (fileInput) fileInput.value = "";
+  state.fileName = null;
+  state.lastResult = null;
+  state.mapper.reset();
+  document.getElementById("original-diff")?.replaceChildren();
+  document.getElementById("sanitized-diff")?.replaceChildren();
 }
 
 function loadSample(kind) {
@@ -490,13 +519,13 @@ function bindInputAndExportEvents() {
   document.getElementById("load-sample-text")?.addEventListener("click", () => loadSample("text"));
   document.getElementById("load-sample-csv")?.addEventListener("click", () => loadSample("csv"));
   document.getElementById("clear-input")?.addEventListener("click", () => {
-    if (rawInput) rawInput.value = "";
-    state.fileName = null;
-    if (fileInput) fileInput.value = "";
-    state.mapper.reset();
+    wipeSensitiveState();
     setFileStatus("No file loaded");
     processInput();
   });
+
+  window.addEventListener("pagehide", wipeSensitiveState);
+  window.addEventListener("beforeunload", wipeSensitiveState);
 
   dropzone?.addEventListener("click", () => fileInput?.click());
   dropzone?.addEventListener("keydown", (e) => {

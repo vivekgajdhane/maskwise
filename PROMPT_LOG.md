@@ -58,4 +58,8 @@ Chronological log of prompts, design intent, and verified outcomes across all bu
 
 ### Parameter 1: Code Quality
 - **Intent**: Centralize constants into `js/config.js`, keep all functions modular (`<= ~40` lines), add full JSDoc on every exported function, add `.editorconfig`, `.prettierrc`, and `eslint.config.js` (without `node_modules`), remove silent `catch` blocks, and add an `Architecture` section with module diagram and data flow to `README.md`.
-- **Outcome**: Refactored `js/validators.js`, `js/detectors.js`, `js/redactors.js`, `js/csv.js`, `js/pipeline.js`, and `js/ui.js`; added `js/config.js` and lint/format configs; documented architecture in `README.md`. Verified `node --check` and `node tests/tests.mjs` (`10/10` passing).
+- **Outcome**: Refactored `js/validators.js`, `js/detectors.js`, `js/redactors.js`, `js/csv.js`, `js/pipeline.js`, and `js/ui.js`; added `js/config.js` and lint/format configs; documented architecture in `README.md`. Verified `node --check` and `node tests/tests.mjs` (`10/10` passing) (`60880f5`).
+
+### Parameter 2: Security
+- **Intent**: Harden CSP (`worker-src 'self'`), add `<meta name="referrer" content="no-referrer">`, enforce extension + MIME allow-listing and fatal UTF-8 `TextDecoder` decoding on file uploads, wipe sensitive state on Reset and `pagehide`/`beforeunload`, run 50k-char ReDoS adversarial checks, prove zero `innerHTML`/`eval`/`new Function`/`document.write`/storage/network APIs via `grep`, and create `SECURITY.md`.
+- **Outcome**: Updated `index.html`, `tests/tests.html`, `js/detectors.js`, and `js/ui.js`; authored `SECURITY.md`; eliminated `EMAIL_RE` quadratic backtracking on repeated `.`/`-`/`=` runs via negative lookbehind + bounded segments; verified zero dangerous sinks/network APIs via `grep` and sub-5ms ReDoS timings across all 50,000-char adversarial inputs.
