@@ -1,7 +1,7 @@
-# Security Policy & Threat Model — CloakText
+# Security Policy & Threat Model — Maskwise
 
 ## Threat Model
-CloakText processes sensitive Personally Identifiable Information (PII)—emails, phone numbers, IP addresses, Indian PANs, Aadhaar numbers, and payment card numbers—inside a static web application. Primary threats considered:
+Maskwise processes sensitive Personally Identifiable Information (PII)—emails, phone numbers, IP addresses, Indian PANs, Aadhaar numbers, and payment card numbers—inside a static web application. Primary threats considered:
 1. **Data Exfiltration**: Accidental or malicious outbound transmission of raw PII to external servers, analytics, or third-party CDNs.
 2. **Stored/Reflected XSS via Untrusted Input**: Malicious HTML/JS payloads embedded inside pasted logs or uploaded `.txt`/`.csv` files executing in the browser.
 3. **ReDoS (Regular Expression Denial of Service)**: Adversarial input (e.g., 50,000 repeated digits, `@`, `.`, or `:`) freezing the UI thread via catastrophic backtracking.

@@ -3,7 +3,8 @@
  * Intentionally avoids loading detection/redaction modules to keep "/" lightweight.
  */
 
-const THEME_STORAGE_KEY = "cloaktext-theme"; // Theme preference only; never stores user text or PII
+const THEME_STORAGE_KEY = "maskwise-theme"; // Theme preference only; never stores user text or PII
+const LEGACY_THEME_KEY = "cloaktext-theme"; // Intentional one-time fallback for users switching from old key
 
 function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
@@ -19,6 +20,12 @@ function readStoredTheme() {
   try {
     const saved = window.localStorage?.getItem(THEME_STORAGE_KEY);
     if (saved === "light" || saved === "dark") return saved;
+    const legacy = window.localStorage?.getItem(LEGACY_THEME_KEY);
+    if (legacy === "light" || legacy === "dark") {
+      window.localStorage?.setItem(THEME_STORAGE_KEY, legacy);
+      window.localStorage?.removeItem(LEGACY_THEME_KEY);
+      return legacy;
+    }
   } catch {
     return null;
   }

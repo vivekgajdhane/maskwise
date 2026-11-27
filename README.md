@@ -1,12 +1,12 @@
-# CloakText — Client-Side PII Sanitizer
+# Maskwise — Smart Redaction That Never Leaves Your Device
 
-CloakText is a dependency-free, 100% browser-based Personally Identifiable Information (PII) sanitizer built for **PromptWars x NIAT_Pune** (Google x NIAT Hackathon). Users can paste raw logs, support tickets, resumes, clinical notes, or upload `.txt`/`.csv` files (up to 5 MB) to detect, validate, highlight, redact, and export sanitized data **entirely inside the browser** without any server communication.
+Maskwise is a dependency-free, 100% browser-based Personally Identifiable Information (PII) sanitizer built for **PromptWars x NIAT_Pune** (Google x NIAT Hackathon). Users can paste raw logs, support tickets, resumes, clinical notes, or upload `.txt`/`.csv` files (up to 5 MB) to detect, validate, highlight, redact, and export sanitized data **entirely inside the browser** without any server communication.
 
 ---
 
 ## Problem Statement
 
-Organizations and individuals routinely paste or share application logs, support tickets, CSV exports, resumes, and clinical notes containing raw emails, phone numbers, IP addresses, Indian PANs, Aadhaar numbers, and payment card numbers. Uploading sensitive raw data to third-party web tools introduces severe privacy, compliance, and breach risks. CloakText eliminates server-side exposure by executing every detection, validation, redaction, and export step locally on the client.
+Organizations and individuals routinely paste or share application logs, support tickets, CSV exports, resumes, and clinical notes containing raw emails, phone numbers, IP addresses, Indian PANs, Aadhaar numbers, and payment card numbers. Uploading sensitive raw data to third-party web tools introduces severe privacy, compliance, and breach risks. Maskwise eliminates server-side exposure by executing every detection, validation, redaction, and export step locally on the client.
 
 ---
 
@@ -18,7 +18,7 @@ Organizations and individuals routinely paste or share application logs, support
 
 ## Architecture
 
-CloakText uses a strict unidirectional client-side pipeline with zero external network calls:
+Maskwise uses a strict unidirectional client-side pipeline with zero external network calls:
 
 ```text
 [ / (index.html + css/tokens.css + css/landing.css + js/landing.js) ]
@@ -165,9 +165,9 @@ Measured with `node tests/bench.js` (dense mixed PII in Pseudonymize mode):
 
 ## Google Technologies & Privacy-Safe Usage
 
-Built with **Google Antigravity**. Every Google technology used in CloakText operates without sending user data to any server:
+Built with **Google Antigravity**. Every Google technology used in Maskwise operates without sending user data to any server:
 
-| Technology | Role in CloakText | Why It Is Privacy-Safe |
+| Technology | Role in Maskwise | Why It Is Privacy-Safe |
 | :--- | :--- | :--- |
 | **Google Fonts (`Sora`)** | UI headings and labels | Self-hosted in `/fonts/sora-latin-*.woff2`; zero requests to `fonts.googleapis.com` or `fonts.gstatic.com` |
 | **Firebase Hosting** | Static deployment config (`firebase.json`) | Serves static files only with strict HTTP `Content-Security-Policy`, `Referrer-Policy: no-referrer`, and `X-Content-Type-Options: nosniff`; no Firestore, Auth, or Analytics |
@@ -190,12 +190,12 @@ firebase deploy --only hosting
 > _Screenshot Placeholder_: Capture the live Desktop (`1440px`) side-by-side diff after clicking **Load sample noisy data** and switching to **Pseudonymize** with **Show mapping table** expanded, and save here if desired.
 >
 > ```text
-> [ CloakText Desktop Diff & Pseudonym Mapping Preview ]
+> [ Maskwise Desktop Diff & Pseudonym Mapping Preview ]
 > ```
 
 ---
 
 ## Limitations
 
-- **No Named-Entity Recognition (NER)**: CloakText intentionally uses deterministic pattern + checksum algorithms offline without downloading heavy ML models. Unstructured person names (e.g., `Rohan Kulkarni`), street addresses, or free-text medical diagnoses are not automatically detected unless matched by structured identifiers (email, phone, PAN, Aadhaar, card, IP).
+- **No Named-Entity Recognition (NER)**: Maskwise intentionally uses deterministic pattern + checksum algorithms offline without downloading heavy ML models. Unstructured person names (e.g., `Rohan Kulkarni`), street addresses, or free-text medical diagnoses are not automatically detected unless matched by structured identifiers (email, phone, PAN, Aadhaar, card, IP).
 - **File Cap**: Local file uploads are capped at **5 MB** per `.txt`/`.csv` file to keep interactive UI diff rendering responsive in single-threaded browser tabs.

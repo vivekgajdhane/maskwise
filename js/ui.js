@@ -1,5 +1,5 @@
 /**
- * CloakText UI controller — coordinates input, pipeline execution, XSS-safe
+ * Maskwise UI controller — coordinates input, pipeline execution, XSS-safe
  * diff rendering, synchronized scrolling, summary metrics, mapping table,
  * sample loading, and local copy/download export.
  */
@@ -428,8 +428,8 @@ function downloadSanitized() {
   const ext = state.format === "csv" ? "csv" : "txt";
   const dotIdx = state.fileName ? state.fileName.lastIndexOf(".") : -1;
   const filename = state.fileName
-    ? `${dotIdx > 0 ? state.fileName.slice(0, dotIdx) : state.fileName}.sanitized.${ext}`
-    : `sanitized-output.${ext}`;
+    ? `${dotIdx > 0 ? state.fileName.slice(0, dotIdx) : state.fileName}.maskwise-sanitized.${ext}`
+    : `maskwise-sanitized.${ext}`;
   const blob = new Blob([text], { type: state.format === "csv" ? "text/csv;charset=utf-8" : "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
@@ -559,12 +559,19 @@ function loadSample(kind) {
   processInput();
 }
 
-const THEME_STORAGE_KEY = "cloaktext-theme"; // Theme preference only; never stores user text or PII
+const THEME_STORAGE_KEY = "maskwise-theme"; // Theme preference only; never stores user text or PII
+const LEGACY_THEME_KEY = "cloaktext-theme"; // Intentional one-time fallback for users switching from old key
 
 function readStoredTheme() {
   try {
     const saved = window.localStorage?.getItem(THEME_STORAGE_KEY);
     if (saved === "light" || saved === "dark") return saved;
+    const legacy = window.localStorage?.getItem(LEGACY_THEME_KEY);
+    if (legacy === "light" || legacy === "dark") {
+      window.localStorage?.setItem(THEME_STORAGE_KEY, legacy);
+      window.localStorage?.removeItem(LEGACY_THEME_KEY);
+      return legacy;
+    }
   } catch {
     return null;
   }

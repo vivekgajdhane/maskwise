@@ -1,4 +1,4 @@
-# Prompt Log — CloakText (PromptWars x NIAT_Pune)
+# Prompt Log — Maskwise (PromptWars x NIAT_Pune)
 
 Chronological log of prompts, design intent, and verified outcomes across all build phases.
 
@@ -82,4 +82,8 @@ Chronological log of prompts, design intent, and verified outcomes across all bu
 
 ### Landing Page & Analyzer Restructure
 - **Intent**: Move the analyzer workspace to `/analyze/index.html`, create a minimal, well-spaced landing page at `/` with a top-right `Launch App` button, share design tokens via `css/tokens.css`, keep landing JS minimal (`js/landing.js` theme toggle only), sync theme preference between pages, and add route smoke tests.
-- **Outcome**: Created `css/tokens.css`, `css/landing.css`, `js/landing.js`, `analyze/index.html`, and new root `index.html`. Updated `firebase.json` (`cleanUrls: true`), `js/ui.js`, `tests/tests.html`, `tests/unit.test.mjs`, and `README.md`. Verified `node --test` (`11/11` passing) and responsive/CSP checks on both `/` and `/analyze/`.
+- **Outcome**: Created `css/tokens.css`, `css/landing.css`, `js/landing.js`, `analyze/index.html`, and new root `index.html`. Updated `firebase.json` (`cleanUrls: true`), `js/ui.js`, `tests/tests.html`, `tests/unit.test.mjs`, and `README.md`. Verified `node --test` (`11/11` passing) and responsive/CSP checks on both `/` and `/analyze/` (`a267c39`).
+
+### Rename App to Maskwise
+- **Intent**: Rename all branding, titles, meta tags, ARIA labels, `localStorage` theme keys (`maskwise-theme` with commented one-time `cloaktext-theme` fallback), downloaded filenames (`maskwise-sanitized.txt`/`.csv`), and docs to **Maskwise** with zero functional or layout changes.
+- **Outcome**: Updated `index.html`, `analyze/index.html`, `js/landing.js`, `js/ui.js`, `tests/suite.js`, `tests/tests.html`, `README.md`, `SECURITY.md`, and `PROMPT_LOG.md`. Verified `grep -ri "cloak" .` (excluding `.git`) shows only the intentional commented `localStorage` fallback, all tests pass, and both `/` and `/analyze/` render cleanly across `360px`, `768px`, and `1440px`.

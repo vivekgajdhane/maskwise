@@ -1,5 +1,5 @@
 /**
- * Dependency-free ES module unit & integration test suite for CloakText.
+ * Dependency-free ES module unit & integration test suite for Maskwise.
  * Runs identically in Node (tests/tests.mjs) and the browser (tests/tests.html).
  */
 
