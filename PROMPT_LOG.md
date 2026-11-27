@@ -62,4 +62,8 @@ Chronological log of prompts, design intent, and verified outcomes across all bu
 
 ### Parameter 2: Security
 - **Intent**: Harden CSP (`worker-src 'self'`), add `<meta name="referrer" content="no-referrer">`, enforce extension + MIME allow-listing and fatal UTF-8 `TextDecoder` decoding on file uploads, wipe sensitive state on Reset and `pagehide`/`beforeunload`, run 50k-char ReDoS adversarial checks, prove zero `innerHTML`/`eval`/`new Function`/`document.write`/storage/network APIs via `grep`, and create `SECURITY.md`.
-- **Outcome**: Updated `index.html`, `tests/tests.html`, `js/detectors.js`, and `js/ui.js`; authored `SECURITY.md`; eliminated `EMAIL_RE` quadratic backtracking on repeated `.`/`-`/`=` runs via negative lookbehind + bounded segments; verified zero dangerous sinks/network APIs via `grep` and sub-5ms ReDoS timings across all 50,000-char adversarial inputs.
+- **Outcome**: Updated `index.html`, `tests/tests.html`, `js/detectors.js`, and `js/ui.js`; authored `SECURITY.md`; eliminated `EMAIL_RE` quadratic backtracking on repeated `.`/`-`/`=` runs via negative lookbehind + bounded segments; verified zero dangerous sinks/network APIs via `grep` and sub-5ms ReDoS timings across all 50,000-char adversarial inputs (`82ac445`).
+
+### Parameter 3: Efficiency
+- **Intent**: Offload detection/redaction to an ES-module Web Worker (`js/worker.js`) with graceful main-thread fallback, add `requestAnimationFrame` chunked diff rendering with a 200 KB preview window for multi-MB inputs, build `tests/bench.js`, and measure exact asset sizes.
+- **Outcome**: Added `js/worker.js` and `tests/bench.js`, updated `js/redactors.js` and `js/ui.js`. Verified benchmarks (`100 KB`: `6.6 ms`, `1 MB`: `33.5 ms`, `5 MB`: `171.6 ms`), total shipped assets `162,778` bytes (~159 KB), and live Web Worker execution in headless Chromium.

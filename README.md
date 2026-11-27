@@ -135,6 +135,22 @@ open http://127.0.0.1:8000/index.html
 
 ---
 
+## Performance Benchmarks & Asset Footprint
+
+Measured with `node tests/bench.js` (dense mixed PII in Pseudonymize mode):
+
+| Input Size | Entities Detected | Processing Time | Throughput |
+| :--- | ---: | ---: | ---: |
+| **100 KB** | 1,709 | 6.6 ms | 14.8 MB/s |
+| **1 MB** | 17,504 | 33.5 ms | 29.9 MB/s |
+| **5 MB** | 87,519 | 171.6 ms | 29.1 MB/s |
+
+- **Background Processing**: Detection, validation, and redaction run inside a dedicated ES-module Web Worker (`js/worker.js`, `worker-src 'self'`) with a graceful main-thread fallback.
+- **Chunked Diff Rendering**: Inputs over 120 KB render in `requestAnimationFrame` chunks (`250` spans/frame) with a 200 KB live preview window so 5 MB files never freeze scrolling while keeping the full sanitized output ready for Copy and Download.
+- **Shipped Asset Size**: `162,778` bytes (~159 KB) total across `index.html` (15.2 KB), `css/styles.css` (20.3 KB), 9 `js/*.js` modules (67.3 KB), and 4 Latin-subset `Sora` `.woff2` fonts (59.9 KB).
+
+---
+
 ## Screenshot
 
 > _Screenshot Placeholder_: Capture the live Desktop (`1440px`) side-by-side diff after clicking **Load sample noisy data** and switching to **Pseudonymize** with **Show mapping table** expanded, and save here if desired.

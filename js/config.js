@@ -9,6 +9,7 @@ export const APP_CONFIG = Object.freeze({
   BUCKET_SIZE: 128,
   DIFF_CHUNK_SIZE: 250,
   LARGE_TEXT_THRESHOLD: 120000,
+  PREVIEW_CHAR_CAP: 200000,
 });
 
 export const ALLOWED_EXTENSIONS = new Set(["txt", "csv"]);

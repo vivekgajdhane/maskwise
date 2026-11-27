@@ -42,11 +42,25 @@ export function normalizeForMapping(type, value) {
 /**
  * Create a stateful pseudonym mapper maintaining consistent numbered tokens per type.
  *
+ * @param {Array<{ token: string, type: string, normalized: string, count?: number, variants?: string[] }>} [initialEntries]
  * @returns {{ resolve: Function, beginRun: Function, entries: Function, reset: Function }}
  */
-export function createPseudonymMapper() {
+export function createPseudonymMapper(initialEntries = []) {
   const keyToEntry = new Map();
   const typeCounters = new Map();
+
+  for (const item of initialEntries) {
+    const mapKey = `${item.type}:${item.normalized}`;
+    keyToEntry.set(mapKey, {
+      token: item.token,
+      type: item.type,
+      normalized: item.normalized,
+      count: item.count || 0,
+      variants: new Set(item.variants || []),
+    });
+    const suffixNum = Number(item.token.split("_").pop()) || 0;
+    typeCounters.set(item.type, Math.max(typeCounters.get(item.type) || 0, suffixNum));
+  }
 
   return {
     resolve(type, rawValue) {

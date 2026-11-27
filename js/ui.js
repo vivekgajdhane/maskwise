@@ -31,6 +31,9 @@ const state = {
   debounceTimer: null,
   copyTimer: null,
   syncLock: null,
+  worker: null,
+  requestSeq: 0,
+  renderSeq: 0,
 };
 
 function getFileExtension(name) {
@@ -114,7 +117,49 @@ function createDiffMark(text, span, isSanitized) {
   return mark;
 }
 
-function renderDiffPane(container, text, spans, isSanitized, emptyMessage) {
+function appendChunkedNodes(container, text, spans, isSanitized, renderToken, noteText) {
+  const limit = Math.min(text.length, APP_CONFIG.PREVIEW_CHAR_CAP);
+  let idx = 0;
+  let cursor = 0;
+
+  function step() {
+    if (state.renderSeq !== renderToken) return;
+    const fragment = document.createDocumentFragment();
+    let count = 0;
+
+    while (idx < spans.length && count < APP_CONFIG.DIFF_CHUNK_SIZE) {
+      const span = spans[idx];
+      const start = isSanitized ? span.sanitizedStart : span.start;
+      const end = isSanitized ? span.sanitizedEnd : span.end;
+      idx += 1;
+      if (start < cursor || start >= limit) continue;
+      const clampedEnd = Math.min(end, limit);
+      if (start > cursor) fragment.appendChild(document.createTextNode(text.slice(cursor, start)));
+      fragment.appendChild(createDiffMark(text.slice(start, clampedEnd), span, isSanitized));
+      cursor = clampedEnd;
+      count += 1;
+    }
+
+    if (idx < spans.length && cursor < limit) {
+      container.appendChild(fragment);
+      requestAnimationFrame(step);
+      return;
+    }
+
+    if (cursor < limit) fragment.appendChild(document.createTextNode(text.slice(cursor, limit)));
+    if (text.length > limit) {
+      const note = document.createElement("span");
+      note.className = "empty-state";
+      note.textContent = `\n\n${noteText}`;
+      fragment.appendChild(note);
+    }
+    container.appendChild(fragment);
+  }
+
+  step();
+}
+
+function renderDiffPane(container, text, spans, isSanitized, emptyMessage, renderToken) {
   if (!container) return;
   container.replaceChildren();
   if (!text) {
@@ -124,18 +169,31 @@ function renderDiffPane(container, text, spans, isSanitized, emptyMessage) {
     container.appendChild(empty);
     return;
   }
-  const fragment = document.createDocumentFragment();
-  let cursor = 0;
-  for (const span of spans) {
-    const start = isSanitized ? span.sanitizedStart : span.start;
-    const end = isSanitized ? span.sanitizedEnd : span.end;
-    if (start < cursor || start > text.length || end > text.length) continue;
-    if (start > cursor) fragment.appendChild(document.createTextNode(text.slice(cursor, start)));
-    fragment.appendChild(createDiffMark(text.slice(start, end), span, isSanitized));
-    cursor = end;
+
+  if (text.length <= APP_CONFIG.LARGE_TEXT_THRESHOLD && spans.length <= APP_CONFIG.DIFF_CHUNK_SIZE) {
+    const fragment = document.createDocumentFragment();
+    let cursor = 0;
+    for (const span of spans) {
+      const start = isSanitized ? span.sanitizedStart : span.start;
+      const end = isSanitized ? span.sanitizedEnd : span.end;
+      if (start < cursor || start > text.length || end > text.length) continue;
+      if (start > cursor) fragment.appendChild(document.createTextNode(text.slice(cursor, start)));
+      fragment.appendChild(createDiffMark(text.slice(start, end), span, isSanitized));
+      cursor = end;
+    }
+    if (cursor < text.length) fragment.appendChild(document.createTextNode(text.slice(cursor)));
+    container.appendChild(fragment);
+    return;
   }
-  if (cursor < text.length) fragment.appendChild(document.createTextNode(text.slice(cursor)));
-  container.appendChild(fragment);
+
+  appendChunkedNodes(
+    container,
+    text,
+    spans,
+    isSanitized,
+    renderToken,
+    `[Preview truncated at ${formatBytes(APP_CONFIG.PREVIEW_CHAR_CAP)} to keep scrolling smooth — full ${formatBytes(text.length)} output is ready for Copy / Download.]`
+  );
 }
 
 function formatRejectedSummary(rejected) {
@@ -239,7 +297,64 @@ function updateLineCounters(origText, sanText) {
   if (sanLineEl) sanLineEl.textContent = `${sanLines} ${sanLines === 1 ? "line" : "lines"}`;
 }
 
-function processInput() {
+function applySanitizationResult(result) {
+  state.lastResult = result;
+  state.renderSeq += 1;
+  const renderToken = state.renderSeq;
+
+  updateLineCounters(result.originalText, result.sanitizedText);
+  renderDiffPane(
+    document.getElementById("original-diff"),
+    result.originalText,
+    result.entities,
+    false,
+    "Paste text, upload a .txt/.csv file, or load sample noisy data to inspect detected PII.",
+    renderToken
+  );
+  renderDiffPane(
+    document.getElementById("sanitized-diff"),
+    result.sanitizedText,
+    result.replacements,
+    true,
+    "Sanitized output will appear here in real time.",
+    renderToken
+  );
+  updateSummaryBadges(result);
+  renderMappingTable(result);
+
+  const hasOutput = result.sanitizedText.length > 0;
+  const copyBtn = document.getElementById("copy-output");
+  const downloadBtn = document.getElementById("download-output");
+  if (copyBtn) copyBtn.disabled = !hasOutput;
+  if (downloadBtn) downloadBtn.disabled = !hasOutput;
+}
+
+function getOrCreateWorker() {
+  if (state.worker || typeof Worker === "undefined") return state.worker;
+  try {
+    state.worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
+    state.worker.addEventListener("message", (event) => {
+      const { requestId, ok, result, error } = event.data || {};
+      if (requestId !== state.requestSeq) return;
+      if (!ok) {
+        setFileStatus(`Processing error: ${error || "Worker failed."}`, true);
+        return;
+      }
+      state.mapper = createPseudonymMapper(result.mapperEntries || []);
+      applySanitizationResult({ ...result, mapper: state.mapper });
+    });
+    state.worker.addEventListener("error", () => {
+      state.worker?.terminate();
+      state.worker = null;
+      processInputOnMainThread();
+    });
+  } catch {
+    state.worker = null;
+  }
+  return state.worker;
+}
+
+function processInputOnMainThread() {
   try {
     const text = document.getElementById("raw-input")?.value || "";
     if (!state.persistMapping) state.mapper.reset();
@@ -252,34 +367,33 @@ function processInput() {
       typedFullMask: state.typedFullMask,
       mapper: state.mapper,
     });
-    state.lastResult = result;
-    updateLineCounters(result.originalText, result.sanitizedText);
-    renderDiffPane(
-      document.getElementById("original-diff"),
-      result.originalText,
-      result.entities,
-      false,
-      "Paste text, upload a .txt/.csv file, or load sample noisy data to inspect detected PII."
-    );
-    renderDiffPane(
-      document.getElementById("sanitized-diff"),
-      result.sanitizedText,
-      result.replacements,
-      true,
-      "Sanitized output will appear here in real time."
-    );
-    updateSummaryBadges(result);
-    renderMappingTable(result);
-
-    const hasOutput = result.sanitizedText.length > 0;
-    const copyBtn = document.getElementById("copy-output");
-    const downloadBtn = document.getElementById("download-output");
-    if (copyBtn) copyBtn.disabled = !hasOutput;
-    if (downloadBtn) downloadBtn.disabled = !hasOutput;
+    applySanitizationResult(result);
   } catch (err) {
     setFileStatus(`Processing error: ${err?.message || "Unable to sanitize input."}`, true);
     announce("An error occurred while processing input.");
   }
+}
+
+function processInput() {
+  const text = document.getElementById("raw-input")?.value || "";
+  const worker = getOrCreateWorker();
+  if (!worker || text.length === 0) {
+    processInputOnMainThread();
+    return;
+  }
+
+  state.requestSeq += 1;
+  if (!state.persistMapping) state.mapper.reset();
+  worker.postMessage({
+    requestId: state.requestSeq,
+    text,
+    format: state.format,
+    enabledTypes: Array.from(state.enabledTypes),
+    mode: state.mode,
+    typedFullMask: state.typedFullMask,
+    persistMapping: state.persistMapping,
+    mapperEntries: state.persistMapping ? state.mapper.entries() : [],
+  });
 }
 
 function scheduleProcess() {
