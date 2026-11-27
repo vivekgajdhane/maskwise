@@ -17,3 +17,7 @@ Chronological record of prompts, engineering decisions, and phase outcomes.
 ## Phase 4: Input Handling, RFC-4180 CSV, and Formula Guard
 - **Intent**: Implement local-only `.txt`/`.csv` upload with 5 MB cap via `FileReader`, preserve line endings/whitespace in plain text, and build an RFC-4180 CSV parser/serializer (`js/csv.js`) that sanitizes cell-by-cell while preserving headers and defending against spreadsheet formula injection (`=`, `+`, `-`, `@`).
 - **Outcome**: Built `js/csv.js`, wired `js/pipeline.js`, added Plain Text / CSV mode toggle in `index.html` and `css/styles.css`, and implemented drag-and-drop, file extension/size validation, and local `FileReader` loading in `js/ui.js`. Verified CSV round-trips, embedded commas/newlines/quotes, formula neutralization, and exact diff offsets.
+
+## Phase 5: Audit View, Diff Highlighting, Samples, and Export
+- **Intent**: Render live side-by-side highlighted diff panes via XSS-safe DOM text nodes (`textContent`), add synchronized scrolling, live per-type + rejected candidate counts, per-type detector toggles, 1-click Blob download and Copy export, mapping table drawer, and realistic sample text + CSV loaders.
+- **Outcome**: Implemented `js/samples.js` (support ticket, resume, clinical note, server log + mixed CSV with valid PII, repeats, Luhn/Verhoeff/IP/PAN decoys, and formula payloads) and completed Phase 5 rendering/export/scroll-sync in `js/ui.js` with zero `innerHTML`.
